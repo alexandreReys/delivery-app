@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import logo from "../../../assets/logo-shopping-list.png"
+import banner from "../../../assets/app-banner.jpeg";
 
 import * as masks from "../../utils/masks";
 import * as utils from "../../utils";
@@ -111,6 +112,11 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                 </View>
             </TouchableWithoutFeedback>
 
+
+            <View style={{flexDirection: "row", justifyContent: "center"}}>
+                <Image source={banner} style={{marginVertical: 10, width: "95%", height: 200, borderRadius: 20}} />
+            </View>
+
             { loading && (<Loader />)}
 
             { !loading && (
@@ -166,7 +172,15 @@ const ProductRow = ({ categoryProducts, navigation }) => {
 };
 
 const Product = ({ product, navigation }) => {
-    const precoVinho = masks.moneyMask(product.PrecoVinho);
+    product = utils.adjustPromotionalPrice(product);
+
+    var precoVinho, precoAnterVinho;
+
+    if (product.EmPromocaoVinho && product.PrecoVinho >= 100) { precoVinho = masks.numberMask(product.PrecoVinho) }
+    else { precoVinho = masks.moneyMask(product.PrecoVinho) };
+
+    if (product.EmPromocaoVinho && product.PrecoPromocionalVinho >= 100) { precoAnterVinho = masks.moneyMaskSpaceless(product.PrecoAnterVinho) }
+    else { precoAnterVinho = masks.moneyMask(product.PrecoAnterVinho) };
 
     productClick = (product) => {
         const param = {
@@ -201,9 +215,17 @@ const Product = ({ product, navigation }) => {
                 </View>
 
                 <View style={styles.priceContainer}>
-                    <Text style={styles.price}>
-                        {precoVinho}
-                    </Text>
+                    <View style={[{ flexDirection: "row" }]}>
+                        <Text style={!product.EmPromocaoVinho ? styles.price : styles.priceLine}>
+                            {precoAnterVinho}
+                        </Text>
+
+                        {!!product.EmPromocaoVinho && (
+                            <Text style={styles.price}>
+                                {precoVinho}
+                            </Text>
+                        )}
+                    </View>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -354,7 +376,15 @@ const styles = StyleSheet.create({
     },
     price: {
         fontWeight: "bold",
-        fontSize: 16,
+        fontSize: 14,
+    },
+    priceLine: {
+        paddingTop: 5,
+        fontSize: 10,
+        textDecorationStyle: 'solid',
+        textDecorationLine: 'line-through',
+        color: "red",
+        marginRight: 5,
     },
 });
 

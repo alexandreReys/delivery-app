@@ -6,6 +6,12 @@ import store from "../store";
 import { actionSetOrders, actionSetOrder } from "../store/actions";
 import logo from "../../assets/logo.png";
 
+export const adjustPromotionalPrice = (list) => {
+  list = { ...list, PrecoAnterVinho: list.PrecoVinho };
+  if (list.EmPromocaoVinho) list.PrecoVinho = list.PrecoPromocionalVinho;
+  return list;
+};
+
 export const showAlert = (title, message) => {
   Alert.alert(
     title,
