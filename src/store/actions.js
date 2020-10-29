@@ -74,3 +74,7 @@ export function actionSetCustomerInfo(customerInfo) {
 export function actionSetCoords(coords) {
   return { type: "ACTION_SET_COORDS", coords };
 };
+
+export function actionGetCategories(data) {
+  return { type: "ACTION_GET_CATEGORIES", data };
+};

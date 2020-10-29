@@ -58,8 +58,8 @@ const deliveryAddressSave = (state, { address }) => {
   AsyncStorage.setItem("deliveryAddress-postalCode", address.postalCode);
   AsyncStorage.setItem("deliveryAddress-street", address.street);
   AsyncStorage.setItem("deliveryAddress-number", address.number);
-  AsyncStorage.setItem("deliveryAddress-complement", address.complement);
-  AsyncStorage.setItem("deliveryAddress-info", address.info);
+  AsyncStorage.setItem("deliveryAddress-complement", address.complement? address.complement: " ");
+  AsyncStorage.setItem("deliveryAddress-info", address.info? address.info: " ");
   AsyncStorage.setItem("deliveryAddress-neighborhood", address.neighborhood);
   AsyncStorage.setItem("deliveryAddress-city", address.city);
   AsyncStorage.setItem("deliveryAddress-state", address.state);

@@ -9,7 +9,7 @@ import logo from "../../assets/logo.png";
 export const adjustPromotionalPrice = (list) => {
   list = { ...list, PrecoAnterVinho: list.PrecoVinho };
   if (list.EmPromocaoVinho) list.PrecoVinho = list.PrecoPromocionalVinho;
-  return list;
+    return list;
 };
 
 export const showAlert = (title, message) => {

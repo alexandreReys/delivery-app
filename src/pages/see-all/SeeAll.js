@@ -25,7 +25,15 @@ const SeeAll = ({ navigation }) => {
     async function getProductList() {
 
         async function getProductsByCategory() {
-            const data = await productService.getActiveProductsByCategory(navigation.state.params.category);
+            let data;
+            if (navigation.state.params.category === "Promoção") {
+                let products = await productService.getActiveProductsInPromotion();
+                data = products.map((product) => utils.adjustPromotionalPrice(product));
+            } else {
+                let products = await productService.getActiveProductsByCategory(navigation.state.params.category);
+                data = products.map((product) => utils.adjustPromotionalPrice(product));
+            };
+
             if (data) setProducts(data);
         };
         getProductsByCategory();

@@ -17,9 +17,10 @@ import * as defs from "../../configs/default";
 import * as productService from "../../services/productService";
 import * as orderService from "../../services/orderService";
 import * as settingsService from "../../services/settingsService";
+import * as categoryService from "../../services/categoryService";
 
 import store from "../../store";
-import { actionSelectProduct } from "../../store/actions";
+import { actionGetCategories, actionSelectProduct } from "../../store/actions";
 
 import Loader from "../../components/Loader";
 // import LottieView from 'lottie-react-native';
@@ -27,6 +28,8 @@ import Loader from "../../components/Loader";
 const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchBox, setSearchBox] = useState(false);
+    const [categories, setCategories] = useState([]);
 
     useEffect(() => {
         getProductsAddressAndSettings();
@@ -52,6 +55,56 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
         navigation.navigate('ShoppingCart')
     }
 
+    const SearchBox = () => {
+        const getCategories = async () => { setCategories(await categoryService.get()) };
+        if (!categories.length) getCategories();
+
+        return (
+            <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <View
+                    style={{
+                        marginVertical: 10, width: "95%",
+                        borderRadius: 10, backgroundColor: "silver", elevation: 5,
+                    }}
+                >
+                    <View style={{
+                        marginTop: 1, marginLeft: 1, paddingVertical: 10,
+                        width: "99%", borderRadius: 10, backgroundColor: "white",
+                    }}> 
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap", marginHorizontal: 15 }}>
+                            { categories.map( (category) => {
+                                return (
+                                    <Text
+                                        key={category.IdCategory}
+                                        style={{
+                                            marginVertical: 5, 
+                                            paddingVertical: 5, 
+                                            width: 150, 
+                                            textAlign: "center", 
+                                            color: "navy",
+                                            fontSize: 10,
+                                            borderWidth: 1,
+                                            borderColor: "orange",
+                                            borderRadius: 5,
+                                            backgroundColor: "#fffde7",
+                                            elevation: 5,
+                                        }}
+                                        onPress={ () => {
+                                            setSearchBox(false)
+                                            navigation.navigate("SeeAll", { category: category.DescriptionCategory })}
+                                        }
+                                    >
+                                        {category.DescriptionCategory}
+                                    </Text>
+                                )
+                            })}
+                        </View>
+                        
+                    </View>
+                </View>
+            </View>
+        );
+    };
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
 
@@ -102,20 +155,29 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
             </View>
 
             {/* search */}
-            <TouchableWithoutFeedback
-                onPress={() => { navigation.navigate("Search") }}
-            >
+            <TouchableWithoutFeedback >
                 <View style={stylesHeader.searchContainer}>
                     <View style={stylesHeader.searchArea}>
-                        <Text style={stylesHeader.searchText}>Pesquise sua bebida favorita</Text>
+                        <Text style={[stylesHeader.searchText, { paddingHorizontal: 15 }]}></Text>
+                        <Text
+                            style={stylesHeader.searchText}
+                            onPress={() => { navigation.navigate("Search") }}
+                        >
+                            Pesquise sua bebida favorita
+                        </Text>
+                        <MaterialCommunityIcons
+                            style={{
+                                marginLeft: 24, color: "black", fontSize: 20,
+                                fontWeight: "bold", paddingHorizontal: 15,
+                            }}
+                            name="chevron-down"
+                            onPress={() => { setSearchBox(!searchBox) }}
+                        />
                     </View>
                 </View>
             </TouchableWithoutFeedback>
 
-
-            <View style={{flexDirection: "row", justifyContent: "center"}}>
-                <Image source={banner} style={{marginVertical: 10, width: "95%", height: 200, borderRadius: 20}} />
-            </View>
+            { !!searchBox && (<SearchBox />)}
 
             { loading && (<Loader />)}
 
@@ -127,12 +189,33 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
     )
 };
 
+
+
+
+
 const MainContent = ({ products, navigation }) => {
     return (
         <ScrollView
             vertical
             showsVerticalScrollIndicator={false}
         >
+            <View style={{
+                flexDirection: "row", justifyContent: "center",
+            }}>
+                <View
+                    style={{
+                        marginVertical: 10, width: "95%", height: 200, borderRadius: 10, backgroundColor: "silver", elevation: 5,
+                    }}
+                >
+                    {/* <Image source={banner} style={{ 
+                        marginVertical: 10, width: "95%", height: 200, borderRadius: 20,
+                    }} /> */}
+                    <Image source={banner} style={{
+                        height: "98%", width: "99%", borderRadius: 10,
+                    }} />
+                </View>
+            </View>
+
             {products.map((it) => (
                 <View vertical key={it.category} style={styles.categoryTitle}>
                     <Text style={styles.categoryDescription}>{it.category}</Text>
@@ -285,10 +368,11 @@ const stylesHeader = StyleSheet.create({
     },
     searchArea: {
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "space-between",
         backgroundColor: "white",
         width: "100%",
         paddingVertical: 10,
+        paddingHorizontal: 10,
         borderRadius: 10,
     },
     searchText: {
