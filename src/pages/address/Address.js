@@ -41,7 +41,6 @@ const Address = ({ navigation }) => {
 
     useEffect(() => {
         BackHandler.addEventListener('hardwareBackPress', () => true);
-        console.log("postalcode", postalCode);
         if (!postalCode) {
             setOnEdit(true);
         };

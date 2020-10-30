@@ -6,7 +6,7 @@
       "ios",
       "android"
     ],
-    "version": "1.7.0",
+    "version": "1.9.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -23,11 +23,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anralexandre.adegadavila",
-      "buildNumber": "1.7.0"
+      "buildNumber": "1.9.0"
     },
     "android": {
       "package": "com.anralexandre.adegadavila",
-      "versionCode": 7,
+      "versionCode": 9,
       "useNextNotificationsApi": true
     }
   }

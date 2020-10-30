@@ -4,17 +4,21 @@ import {
     StyleSheet, View, Text, ScrollView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import StepIndicator from 'react-native-step-indicator';
+
 import * as masks from "../../utils/masks";
 import * as utils from "../../utils";
 import store from "../../store";
 import { actionCartReset } from "../../store/actions";
+
+import * as orderService from "../../services/orderService";
 
 const Confirmed = ({ navigation }) => {
     const [insertId] = useState(navigation.state.params.insertId);
     const [dateOrder] = useState(navigation.state.params.dateOrder);
     const [timeOrder] = useState(navigation.state.params.timeOrder);
     const [prevision, setPrevision] = useState(null);
-
+    
     const [subtotal] = useState(masks.moneyMask(store.getState().cartState.subtotal));
     const [shipping] = useState(masks.moneyMask(store.getState().cartState.shipping));
     const [total] = useState(masks.moneyMask(store.getState().cartState.total));
@@ -22,13 +26,72 @@ const Confirmed = ({ navigation }) => {
     const [quantityOfItems] = useState(store.getState().cartState.quantityOfItems);
     const [paymentType] = useState(store.getState().cartState.paymentType);
 
+    const [position, setPosition] = useState(0);
+    const labels = ["Pedido Enviado", "Separando Produtos", "Entregador saiu", "Chegando ...", "Entregue"];
+    const customStyles = {
+        stepIndicatorSize: 25,
+        currentStepIndicatorSize: 30,
+        separatorStrokeWidth: 2,
+        currentStepStrokeWidth: 3,
+        stepStrokeCurrentColor: '#fe7013',
+        stepStrokeWidth: 3,
+        stepStrokeFinishedColor: '#fe7013',
+        stepStrokeUnFinishedColor: '#aaaaaa',
+        separatorFinishedColor: '#fe7013',
+        separatorUnFinishedColor: '#aaaaaa',
+        stepIndicatorFinishedColor: '#fe7013',
+        stepIndicatorUnFinishedColor: '#ffffff',
+        stepIndicatorCurrentColor: '#ffffff',
+        stepIndicatorLabelFontSize: 13,
+        currentStepIndicatorLabelFontSize: 13,
+        stepIndicatorLabelCurrentColor: '#fe7013',
+        stepIndicatorLabelFinishedColor: '#ffffff',
+        stepIndicatorLabelUnFinishedColor: '#aaaaaa',
+        labelColor: '#999999',
+        labelSize: 13,
+        currentStepLabelColor: '#fe7013'
+    }
+    
     const addr = store.getState().addressState;
+    var myTimer;
+
+    function checkDeliveryStatus() {
+        async function getOrderStatus() {
+            const order = await orderService.getOrder(insertId);
+            if (order.StatusOrder === "Pendente" && position !== 1) {
+                setPosition( 1 );   // Separando Produtos
+            };
+            if (order.StatusOrder === "Saiu para entregar" && position !== 2) {
+                setPosition( 2 );   // Entregador saiu
+            };
+            if (order.StatusOrder === "A caminho" && position !== 3) {
+                setPosition( 3 );   // Chegando ...
+            };
+            if (order.StatusOrder === "Entregue" && position !== 4) {
+                setPosition( 4 );   // Entregue
+            };        
+            console.log(order.StatusOrder);
+        };
+        getOrderStatus();
+    };
+
 
     useEffect(() => {
+        myTimer = setInterval( () => { 
+            if (position > 500) {
+                clearInterval(myTimer);
+            } else {
+                checkDeliveryStatus() 
+            };
+        }, 15000 );
+
         BackHandler.addEventListener('hardwareBackPress', () => true);
         setPrevision(utils.orderPrevision(dateOrder, timeOrder));
-        return () => { store.dispatch(actionCartReset()) }
-    }, [])
+        return () => { 
+            clearInterval(myTimer);
+            store.dispatch(actionCartReset());
+        };
+    }, [position])
 
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
@@ -42,6 +105,12 @@ const Confirmed = ({ navigation }) => {
                 <Text style={{ fontSize: 24, color: "#777777" }}>Pedido Confirmado</Text>
                 <Text style={{ width: 50 }}></Text>
             </View>
+
+            <StepIndicator
+                customStyles={customStyles}
+                currentPosition={position}
+                labels={labels}
+            />
 
             <View style={styles.orderIdContainer}>
                 <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
@@ -69,7 +138,7 @@ const Confirmed = ({ navigation }) => {
                 <View style={{ width: "88%", }}>
                     <Text style={{ fontSize: 14, color: "black", fontWeight: "bold" }}>
                         Previsão de entrega
-          </Text>
+                    </Text>
                     <Text style={{ fontSize: 14, color: "#444" }}>
                         {timeOrder.substr(0, 5)} - {prevision}
                     </Text>
@@ -181,7 +250,7 @@ const Confirmed = ({ navigation }) => {
             <View style={styles.line} />
 
             <View style={styles.itemsHeaderContainer}>
-                <View style={[{flexDirection: "row"},styles.header1]}>
+                <View style={[{ flexDirection: "row" }, styles.header1]}>
                     <Feather
                         style={{ fontSize: 22, color: "black", marginRight: 10 }}
                         name="list"
