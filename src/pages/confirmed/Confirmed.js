@@ -50,7 +50,7 @@ const Confirmed = ({ navigation }) => {
         labelColor: '#999999',
         labelSize: 13,
         currentStepLabelColor: '#fe7013'
-    }
+    };
     
     const addr = store.getState().addressState;
     var myTimer;
@@ -70,11 +70,9 @@ const Confirmed = ({ navigation }) => {
             if (order.StatusOrder === "Entregue" && position !== 4) {
                 setPosition( 4 );   // Entregue
             };        
-            console.log(order.StatusOrder);
         };
         getOrderStatus();
     };
-
 
     useEffect(() => {
         myTimer = setInterval( () => { 

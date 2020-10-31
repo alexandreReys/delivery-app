@@ -7,6 +7,7 @@ const INITIAL_STATE = {
   total: 0,
   paymentType: "",
   changeValue: 0,
+  comments: "",
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -29,6 +30,9 @@ export default function cartReducer(state = INITIAL_STATE, action) {
 
     case "ACTION_SELECT_PAYMENT_TYPE":
       return actionSelectPaymentType(state, action);
+
+    case "ACTION_SET_COMMENTS":
+      return actionSetComments(state, action);
 
     default:
       return state;
@@ -130,5 +134,12 @@ const actionSelectPaymentType = (state, { paymentTypeData }) => {
     ...state,
     paymentType: paymentTypeData.paymentType,
     changeValue: paymentTypeData.changeValue,
+  };
+};
+
+const actionSetComments = (state, { comments } ) => {
+  return {
+    ...state,
+    comments,
   };
 };

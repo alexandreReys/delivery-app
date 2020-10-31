@@ -4,6 +4,61 @@ import store from "../store";
 import { actionSetOrder, actionGetDeliveryAddress } from "../store/actions";
 
 
+
+export const postOrder = async () => {
+  let shoppingCart = store.getState().cartState;
+  let deliveryAddress = store.getState().addressState;
+  let shortAddress = getAddress(deliveryAddress);
+
+  let order = {
+    quantityItemsOrder: shoppingCart.quantityOfItems,
+    totalProductsOrder: shoppingCart.subtotal,
+    shippingAmountOrder: shoppingCart.shipping,
+    totalOrder: shoppingCart.total,
+    changeValueOrder: shoppingCart.changeValue,
+    paymantTypeOrder: shoppingCart.paymentType,
+    customerNameOrder: deliveryAddress.name,
+    customerDocumentOrder: deliveryAddress.document,
+    customerPhoneNumberOrder: deliveryAddress.phoneNumber,
+    customerAddressTypeOrder: deliveryAddress.addressType,
+    customerAddressOrder: shortAddress,
+    customerStreetOrder: deliveryAddress.street,
+    customerNumberOrder: deliveryAddress.number,
+    customerComplementOrder: deliveryAddress.complement,
+    customerInfoOrder: deliveryAddress.info,
+    customerNeighborhoodOrder: deliveryAddress.neighborhood,
+    customerCityOrder: deliveryAddress.city,
+    customerStateOrder: deliveryAddress.state,
+    customerPostalCodeOrder: deliveryAddress.postalCode,
+    deliveryManOrder: "",
+    evaluationOrder: 0,
+    evaluationReasonOrder: "",
+    commentsOrder: shoppingCart.comments,
+    statusOrder: "Pendente",
+
+    orderItems: shoppingCart.addedItems,
+  };
+
+  let resp;
+  try {
+    resp = await api.post("/delivery-order", order);
+  } catch (error) {
+    console.error("ErrorMessage: ", error);
+    return null;
+  }
+
+  order = { ...order, orderId: resp.data.insertId };
+
+  store.dispatch(actionSetOrder(order));
+
+  return resp.data;
+};
+
+
+
+
+
+
 export const getOrders = async (status) => {
   var response;
   if (!status) { 
@@ -48,55 +103,6 @@ export const startDelivery = async (orderId) => {
 export const endDelivery = async (orderId) => {
   const response = await api.put(`/delivery-order/end-delivery/${orderId}`);
   return response.data;
-};
-
-export const postOrder = async () => {
-  let shoppingCart = store.getState().cartState;
-  let deliveryAddress = store.getState().addressState;
-  let shortAddress = getAddress(deliveryAddress);
-
-  let order = {
-    quantityItemsOrder: shoppingCart.quantityOfItems,
-    totalProductsOrder: shoppingCart.subtotal,
-    shippingAmountOrder: shoppingCart.shipping,
-    totalOrder: shoppingCart.total,
-    changeValueOrder: shoppingCart.changeValue,
-    paymantTypeOrder: shoppingCart.paymentType,
-    customerNameOrder: deliveryAddress.name,
-    customerDocumentOrder: deliveryAddress.document,
-    customerPhoneNumberOrder: deliveryAddress.phoneNumber,
-    customerAddressTypeOrder: deliveryAddress.addressType,
-    customerAddressOrder: shortAddress,
-    customerStreetOrder: deliveryAddress.street,
-    customerNumberOrder: deliveryAddress.number,
-    customerComplementOrder: deliveryAddress.complement,
-    customerInfoOrder: deliveryAddress.info,
-    customerNeighborhoodOrder: deliveryAddress.neighborhood,
-    customerCityOrder: deliveryAddress.city,
-    customerStateOrder: deliveryAddress.state,
-    customerPostalCodeOrder: deliveryAddress.postalCode,
-    deliveryManOrder: "",
-    evaluationOrder: 0,
-    evaluationReasonOrder: "",
-    commentsOrder: "",
-    statusOrder: "Pendente",
-
-    orderItems: shoppingCart.addedItems,
-  };
-
-  let resp;
-  try {
-    resp = await api.post("/delivery-order", order);
-  } catch (error) {
-    console.error("ErrorMessage: ", error);
-    return null;
-  }
-
-  order = { ...order, orderId: resp.data.insertId };
-
-  store.dispatch(actionSetOrder(order));
-
-  return resp.data;
 };
 
 export const getAddressStorage = async () => {

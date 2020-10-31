@@ -62,6 +62,9 @@ export function actionRemoveFromCart(itemToRemove) {
 export function actionSelectPaymentType(paymentTypeData) {
   return { type: "ACTION_SELECT_PAYMENT_TYPE", paymentTypeData };
 };
+export function actionSetComments(comments) {
+  return { type: "ACTION_SET_COMMENTS", comments };
+};
 export function actionGetDeliveryAddress(address) {
   return { type: "ACTION_GET_DELIVERY_ADDRESS", address };
 };

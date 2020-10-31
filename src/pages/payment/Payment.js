@@ -17,7 +17,7 @@ import * as orderService from "../../services/orderService";
 import Loader from "../../components/Loader";
 
 const Payment = ({ navigation }) => {
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
 
     const [name, setName] = useState(store.getState().addressState.name);
     const [document, setDocument] = useState(store.getState().addressState.document);
@@ -34,25 +34,31 @@ const Payment = ({ navigation }) => {
 
     useEffect(() => { setShowChange(false) }, []);
 
-    const cardButtonClassName = paymentOption === "Debito/Credito"
-        ? [styles.paymentButton, styles.paymentButtonEnabled]
-        : [styles.paymentButton, styles.paymentButtonDisable];
+    const cardButtonColor = () => ({ 
+        backgroundColor: paymentOption === "Debito/Credito"
+            ? "yellow"
+            : "white" 
+    });
+    const moneyButtonColor = () => ({
+        backgroundColor: paymentOption === "Dinheiro"
+            ? "yellow"
+            : "white"
+    });
+    const confirmButtonColor = () => ({
+        backgroundColor: continueEnabled === true
+            ? defs.confirmButtonColor()
+            : "silver"
+    });
 
-    const moneyButtonClassName = paymentOption === "Dinheiro"
-        ? [styles.paymentButton, styles.paymentButtonEnabled]
-        : [styles.paymentButton, styles.paymentButtonDisable];
-
-    const continueButtonClassName = continueEnabled === true
-        ? [styles.continueButton, styles.continueButtonEnabled, {marginTop: 30}]
-        : [styles.continueButton, styles.continueButtonDisable, {marginTop: 30}];
+    const total = utils.moneyMask(shoppingCartTotal);
 
     const handleOrderConfirmation = async () => {
         if (!paymentOption) return;
-        
+
         const customerInfo = { name, phoneNumber, document };
         if (!validateFields(customerInfo)) return;
-        
-        store.dispatch( actionSetCustomerInfo(customerInfo) );
+
+        store.dispatch(actionSetCustomerInfo(customerInfo));
 
         let changeFor = changeRef.getRawValue();
 
@@ -81,22 +87,20 @@ const Payment = ({ navigation }) => {
                 changeValue: changeValue,
             };
 
-            setLoading(true);
+            // setLoading(true);
             await store.dispatch(actionSelectPaymentType(paymentTypeData));
-            const orderInformation = await orderService.postOrder();
-            setLoading(false);
+            // const orderInformation = await orderService.postOrder();
+            // setLoading(false);
 
-            navigation.navigate('Confirmed', orderInformation);
+            navigation.navigate('Comments');
 
             return;
         };
     };
 
-    const total = utils.moneyMask(shoppingCartTotal);
-
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
-            { loading && (<Loader />)}
+            {/* { loading && (<Loader />)} */}
 
             <View style={styles.header}>
                 <Feather
@@ -107,7 +111,6 @@ const Payment = ({ navigation }) => {
                 <Text style={styles.headerText}>Pagamento na entrega: {total}</Text>
                 <Text style={{ width: 50 }}></Text>
             </View>
-
 
             {/* Nome */}
             <View style={{ flexDirection: "row", marginHorizontal: 20, paddingTop: 10 }}>
@@ -157,42 +160,40 @@ const Payment = ({ navigation }) => {
                 </View>
             </View>
 
+            {/* Card and Money Button */}
+            <Text style={[styles.textInputLabel, {marginHorizontal: "5%", marginTop: 10, textAlign: "center"}]}>
+                Pagar com :
+            </Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "5%", marginTop: 10 }}>
+                {/* Payment Card Button */}
+                    <TouchableOpacity
+                        style={ [styles.paymentButton, cardButtonColor()] }
+                        onPress={() => {
+                            setShowChange(false);
+                            setPaymentOption("Debito/Credito")
+                            setContinueEnabled(true)
+                        }}>
+                        <MaterialIcons style={{ fontSize: 30, color: "#777777" }} name="credit-card" />
+                        <Text style={{ marginLeft: 15, fontSize: 16, color: "#333333" }} >
+                            Cartão
+                        </Text>
+                    </TouchableOpacity>
+                {/* </View> */}
 
-
-            <View style={styles.creditCardButton}>
-                <TouchableOpacity
-                    style={cardButtonClassName}
-                    onPress={() => {
-                        setShowChange(false);
-                        setPaymentOption("Debito/Credito")
-                        setContinueEnabled(true)
-                    }}>
-                    <MaterialIcons style={{ fontSize: 30, color: "#777777" }} name="credit-card" />
-                    <Text style={{ marginLeft: 15, fontSize: 16, color: "#333333" }} >
-                        Cartão de Débito ou Crédito
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.moneyButton}>
-                <TouchableOpacity
-                    style={moneyButtonClassName}
-                    onPress={() => {
-                        setShowChange(true);
-                        setPaymentOption("Dinheiro")
-                        setContinueEnabled(true)
-                    }}>
-                    <Feather style={{ fontSize: 26, color: "#777777" }} name="dollar-sign" />
-                    <Text
-                        style={{
-                            marginLeft: 15,
-                            fontSize: 18,
-                            color: "#333333"
-                        }}
-                    >
-                        Dinheiro
-                    </Text>
-                </TouchableOpacity>
+                {/* Money Button */}
+                    <TouchableOpacity
+                        style={ [styles.paymentButton, moneyButtonColor()] }
+                        onPress={() => {
+                            setShowChange(true);
+                            setPaymentOption("Dinheiro")
+                            setContinueEnabled(true)
+                        }}>
+                        <Feather style={{ fontSize: 24, color: "#777777" }} name="dollar-sign" />
+                        <Text style={{ marginLeft: 15, fontSize: 16, color: "#333333" }} >
+                            Dinheiro
+                        </Text>
+                    </TouchableOpacity>
+                {/* </View> */}
             </View>
 
             {/* change container */}
@@ -216,10 +217,9 @@ const Payment = ({ navigation }) => {
 
             </View>
 
-
             {/* Order Confirmation */}
             <TouchableOpacity
-                style={continueButtonClassName}
+                style={ [styles.continueButton, { marginTop: 30 }, confirmButtonColor()] }
                 onPress={handleOrderConfirmation}
             >
                 <Text style={{ fontSize: 22, color: defs.confirmButtonTextColor() }}>
@@ -227,6 +227,7 @@ const Payment = ({ navigation }) => {
                 </Text>
             </TouchableOpacity>
 
+            {/* precaution Text */}
             <View style={styles.precautionText}>
                 <View>
                     <Text style={{ color: "#283593", fontSize: 16, fontWeight: "bold" }}>
@@ -258,11 +259,9 @@ const validateFields = (customerInfo) => {
     return true;
 };
 
-
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: "#f2f9f9",
     },
     header: {
         flexDirection: "row",
@@ -279,12 +278,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "#000",
         alignSelf: "center"
-    },
-    creditCardButton: {
-        marginTop: 20,
-    },
-    moneyButton: {
-        marginTop: 20,
     },
     changeContainer: {
         flexDirection: "row",
@@ -319,17 +312,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: "5%",
-        width: "90%",
+        // paddingLeft: 20,
+        // paddingRight: 30,
+        width: "48%",
         height: 60,
-        borderRadius: 5,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: "orange",
         elevation: 7,
-    },
-    paymentButtonDisable: {
-        backgroundColor: "white",
-    },
-    paymentButtonEnabled: {
-        backgroundColor: "lightgreen",
     },
     continue_Button: {
         flexDirection: "row",
@@ -344,24 +334,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 30,
         borderColor: "#a5a5a5",
-
-        // backgroundColor: "#ffcc00",
-
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-
         elevation: 5,
     },
     continueButton: defs.confirmButtonContainer()
     ,
-    continueButtonDisable: {
-        backgroundColor: "silver",
-    },
-    continueButtonEnabled: {
-        backgroundColor: defs.confirmButtonColor(),
-    },
     displayEnabled: {
         display: "flex",
     },

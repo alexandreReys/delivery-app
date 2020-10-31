@@ -11,6 +11,7 @@ import Customer from "./pages/customer/Customer";
 import SeeAll from "./pages/see-all/SeeAll";
 import Search from "./pages/search/Search";
 import Main from "./pages/main/Main";
+import Comments from "./pages/comments/Comments";
 
 
 const Routes = createAppContainer(
@@ -54,6 +55,10 @@ const Routes = createAppContainer(
       },
       Main: {
         screen: Main,
+        navigationOptions: { headerShown: false },
+      },
+      Comments: {
+        screen: Comments,
         navigationOptions: { headerShown: false },
       },
     },
