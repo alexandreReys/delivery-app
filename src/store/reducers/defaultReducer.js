@@ -5,6 +5,8 @@ const INITIAL_STATE = {
   adminModule: false,
   addressSellerSettings: "",
   shippingTaxSettings: 0,
+  appBannerSettings: "",
+  appBannerPublicIdSettings: "",
 };
 
 export default function defaultReducer(state = INITIAL_STATE, action) {
@@ -25,5 +27,7 @@ const functionGetSettings = (state, { settings }) => {
     ...state,
     addressSellerSettings: settings.AddressSellerSettings,
     shippingTaxSettings: settings.ShippingTaxSettings,
-  };
+    appBannerSettings: settings.AppBannerSettings,
+    appBannerPublicIdSettings: settings.AppBannerPublicIdSettings,
+    };
 };

@@ -33,17 +33,19 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
 
     useEffect(() => {
         getProductsAddressAndSettings();
+
+        async function getProductsAddressAndSettings() {
+            const data = await productService.getProductsGroupedByCategory();
+            if (data) setProducts(data);
+
+            await orderService.getAddressStorage();
+            await settingsService.get();
+
+            setLoading(false);
+        };
+
     }, []);
 
-    async function getProductsAddressAndSettings() {
-        const data = await productService.getProductsGroupedByCategory();
-        if (data) setProducts(data);
-
-        await orderService.getAddressStorage();
-        await settingsService.get();
-
-        setLoading(false);
-    };
 
     const showAddress = () => {
         if (!addressState.street) return " ";
@@ -70,17 +72,17 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                     <View style={{
                         marginTop: 1, marginLeft: 1, paddingVertical: 10,
                         width: "99%", borderRadius: 10, backgroundColor: "white",
-                    }}> 
+                    }}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap", marginHorizontal: 15 }}>
-                            { categories.map( (category) => {
+                            {categories.map((category) => {
                                 return (
                                     <Text
                                         key={category.IdCategory}
                                         style={{
-                                            marginVertical: 5, 
-                                            paddingVertical: 5, 
-                                            width: 150, 
-                                            textAlign: "center", 
+                                            marginVertical: 5,
+                                            paddingVertical: 5,
+                                            width: 150,
+                                            textAlign: "center",
                                             color: "navy",
                                             fontSize: 10,
                                             borderWidth: 1,
@@ -89,9 +91,10 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                                             backgroundColor: "#fffde7",
                                             elevation: 5,
                                         }}
-                                        onPress={ () => {
+                                        onPress={() => {
                                             setSearchBox(false)
-                                            navigation.navigate("SeeAll", { category: category.DescriptionCategory })}
+                                            navigation.navigate("SeeAll", { category: category.DescriptionCategory })
+                                        }
                                         }
                                     >
                                         {category.DescriptionCategory}
@@ -99,7 +102,7 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                                 )
                             })}
                         </View>
-                        
+
                     </View>
                 </View>
             </View>
@@ -204,15 +207,22 @@ const MainContent = ({ products, navigation }) => {
             }}>
                 <View
                     style={{
-                        marginVertical: 10, width: "95%", height: 200, borderRadius: 10, backgroundColor: "silver", elevation: 5,
+                        marginVertical: 10,
+                        width: "95%",
+                        height: 200,
+                        borderRadius: 10,
+                        backgroundColor: "silver",
+                        elevation: 5,
                     }}
                 >
-                    {/* <Image source={banner} style={{ 
-                        marginVertical: 10, width: "95%", height: 200, borderRadius: 20,
-                    }} /> */}
-                    <Image source={banner} style={{
-                        height: "98%", width: "99%", borderRadius: 10,
-                    }} />
+                    <Image
+                        source={ utils.getImage(store.getState().defaultState.appBannerSettings) }
+                        style={{
+                            height: "98%",
+                            width: "99%",
+                            borderRadius: 5,
+                            resizeMode: "stretch",
+                        }} />
                 </View>
             </View>
 
@@ -314,6 +324,9 @@ const Product = ({ product, navigation }) => {
         </TouchableWithoutFeedback>
     );
 };
+
+
+
 
 
 const stylesHeader = StyleSheet.create({
