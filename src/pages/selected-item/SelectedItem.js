@@ -7,7 +7,7 @@ import { Feather } from "@expo/vector-icons";
 
 import store from "../../store";
 import { actionAddToCart } from "../../store/actions";
-import logo from "../../../assets/logo-shopping-list.png";
+import noImage from "../../../assets/no-image.png";
 import * as masks from "../../utils/masks";
 import * as def from "../../configs/default";
 
@@ -53,7 +53,7 @@ const SelectedItem = ({ navigation }) => {
                     <Image style={styles.image} source={{ uri: selectedProduct.image }} />
                 }
                 {!selectedProduct.image &&
-                    <Image style={styles.image} source={logo}
+                    <Image style={styles.image} source={noImage}
                     />}
             </View>
 

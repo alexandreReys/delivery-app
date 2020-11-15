@@ -6,7 +6,7 @@ import {
 
 import { Feather } from "@expo/vector-icons";
 
-import logo from "../../../assets/logo-shopping-list.png";
+import noImage from "../../../assets/no-image.png";
 import * as masks from "../../utils/masks";
 import * as utils from "../../utils";
 import * as defs from "../../configs/default";
@@ -105,7 +105,7 @@ const Product = ({ product, navigation }) => {
                     {!product.Imagem1Vinho &&
                         <Image
                             style={productStyles.image}
-                            source={logo}
+                            source={noImage}
                         />}
                 </View>
                 <View style={productStyles.descriptionContainer}>

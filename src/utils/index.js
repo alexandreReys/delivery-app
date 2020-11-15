@@ -4,7 +4,7 @@ import * as orderService from "../services/orderService";
 
 import store from "../store";
 import { actionSetOrders, actionSetOrder } from "../store/actions";
-import logo from "../../assets/logo.png";
+import noImage from "../../assets/no-image.png";
 
 export const adjustPromotionalPrice = (list) => {
   list = { ...list, PrecoAnterVinho: list.PrecoVinho };
@@ -98,7 +98,7 @@ export const filterDesc25 = (desc) => {
 
 export const getImage = (uri) => {
   if (uri) return { uri };
-  return logo;
+  return noImage;
 };
 
 export async function loadInitialPosition() {

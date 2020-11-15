@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "adegadavila",
-    "slug": "adegadavila",
+    "name": "adegadavilla",
+    "slug": "adegadavilla",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.11.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -22,12 +22,12 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anralexandre.adegadavila",
-      "buildNumber": "1.11.0"
+      "bundleIdentifier": "br.com.davillaadega",
+      "buildNumber": "1.0.2"
     },
     "android": {
-      "package": "com.anralexandre.adegadavila",
-      "versionCode": 11,
+      "package": "br.com.davillaadega",
+      "versionCode": 2,
       "useNextNotificationsApi": true
     }
   }

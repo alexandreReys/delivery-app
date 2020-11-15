@@ -9,11 +9,7 @@ import store from "../../store";
 import * as masks from "../../utils/masks";
 import * as def from "../../configs/default";
 
-const ShoppingCart = ({
-    navigation,
-    addedItems,
-    quantityOfItems,
-}) => {
+const ShoppingCart = ({ navigation, addedItems, quantityOfItems }) => {
     const subtotal = masks.moneyMask(store.getState().cartState.subtotal);
     const shipping = masks.moneyMask(store.getState().cartState.shipping);
     const total = masks.moneyMask(store.getState().cartState.total);

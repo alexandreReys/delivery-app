@@ -7,8 +7,6 @@ import { connect } from "react-redux";
 
 import { Feather } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import logo from "../../../assets/logo-shopping-list.png"
-import banner from "../../../assets/app-banner.jpeg";
 
 import * as masks from "../../utils/masks";
 import * as utils from "../../utils";
@@ -116,7 +114,7 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                 <View>
                     <Image
                         style={stylesHeader.logotipo}
-                        source={logo}
+                        source={ utils.getImage(store.getState().defaultState.appLogoPSettings) }
                     />
                 </View>
 
@@ -195,36 +193,45 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
 
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
 const MainContent = ({ products, navigation }) => {
-    return (
-        <ScrollView
-            vertical
-            showsVerticalScrollIndicator={false}
-        >
-            <View style={{
-                flexDirection: "row", justifyContent: "center",
-            }}>
-                <View
-                    style={{
-                        marginVertical: 10,
-                        width: "95%",
-                        height: 200,
-                        borderRadius: 10,
-                        backgroundColor: "silver",
-                        elevation: 5,
-                    }}
-                >
+
+    const AppBanner = () => {
+        let styles = StyleSheet.create({
+            mainContainer: {
+                flexDirection: "row",
+                justifyContent: "center"
+            },
+            imageContainer: {
+                marginVertical: 10,
+                width: "95%",
+                height: 200,
+                borderRadius: 10,
+                backgroundColor: "silver",
+                elevation: 5,
+            },
+            image: {
+                height: "98%",
+                width: "99%",
+                borderRadius: 5,
+                resizeMode: "stretch",
+            },
+        });
+        return (
+            <View style={ styles.mainContainer }>
+                <View style={styles.imageContainer}>
                     <Image
-                        source={ utils.getImage(store.getState().defaultState.appBannerSettings) }
-                        style={{
-                            height: "98%",
-                            width: "99%",
-                            borderRadius: 5,
-                            resizeMode: "stretch",
-                        }} />
+                        source={{ uri: store.getState().defaultState.appBannerSettings }}
+                        style={ styles.image }/>
                 </View>
             </View>
+        );
+    };
+    
+    ///////////////////////////
+    return (
+        <ScrollView vertical showsVerticalScrollIndicator={false} >
+            <AppBanner />
 
             {products.map((it) => (
                 <View vertical key={it.category} style={styles.categoryTitle}>
@@ -237,6 +244,37 @@ const MainContent = ({ products, navigation }) => {
 };
 
 const ProductRow = ({ categoryProducts, navigation }) => {
+    let seeAllStyles = StyleSheet.create({
+        seeAllContainer: {
+            flex: 1,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 120
+        },
+        seeAllButton: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 70,
+            height: 70,
+            borderColor: "silver",
+            borderWidth: 1,
+            borderRadius: 50,
+            backgroundColor: "#fff",
+            elevation: 5,
+        },
+        seeAllIcon: {
+            fontSize: 32,
+            color: "blue"
+        },
+        seeAllText: {
+            marginTop: 5,
+            fontWeight: "bold",
+            color: "#1523c8"
+        },
+    });
+    
     return (
         <ScrollView
             horizontal
@@ -269,11 +307,17 @@ const Product = ({ product, navigation }) => {
 
     var precoVinho, precoAnterVinho;
 
-    if (product.EmPromocaoVinho && product.PrecoVinho >= 100) { precoVinho = masks.numberMask(product.PrecoVinho) }
-    else { precoVinho = masks.moneyMask(product.PrecoVinho) };
+    if (product.EmPromocaoVinho && product.PrecoVinho >= 100) { 
+        precoVinho = masks.numberMask(product.PrecoVinho) 
+    } else {
+        precoVinho = masks.moneyMask(product.PrecoVinho)
+    };
 
-    if (product.EmPromocaoVinho && product.PrecoPromocionalVinho >= 100) { precoAnterVinho = masks.moneyMaskSpaceless(product.PrecoAnterVinho) }
-    else { precoAnterVinho = masks.moneyMask(product.PrecoAnterVinho) };
+    if (product.EmPromocaoVinho && product.PrecoPromocionalVinho >= 100) {
+        precoAnterVinho = masks.moneyMaskSpaceless(product.PrecoAnterVinho)
+    } else {
+        precoAnterVinho = masks.moneyMask(product.PrecoAnterVinho)
+    };
 
     productClick = (product) => {
         const param = {
@@ -324,8 +368,6 @@ const Product = ({ product, navigation }) => {
         </TouchableWithoutFeedback>
     );
 };
-
-
 
 
 
@@ -391,37 +433,6 @@ const stylesHeader = StyleSheet.create({
     searchText: {
         color: "grey",
         fontSize: 14,
-    },
-});
-
-const seeAllStyles = StyleSheet.create({
-    seeAllContainer: {
-        flex: 1,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 120
-    },
-    seeAllButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 70,
-        height: 70,
-        borderColor: "silver",
-        borderWidth: 1,
-        borderRadius: 50,
-        backgroundColor: "#fff",
-        elevation: 5,
-    },
-    seeAllIcon: {
-        fontSize: 32,
-        color: "blue"
-    },
-    seeAllText: {
-        marginTop: 5,
-        fontWeight: "bold",
-        color: "#1523c8"
     },
 });
 

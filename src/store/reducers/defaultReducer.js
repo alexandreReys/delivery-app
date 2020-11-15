@@ -1,5 +1,5 @@
 const INITIAL_STATE = {
-  appTitle: "Adega da Vila",
+  appTitle: "Adega da Villa",
   loadingText: "Acessando dados ...",
   errorMsgText: "Verificando ...",
   adminModule: false,
@@ -7,6 +7,8 @@ const INITIAL_STATE = {
   shippingTaxSettings: 0,
   appBannerSettings: "",
   appBannerPublicIdSettings: "",
+  appLogoPSettings: "",
+  appLogoPPublicIdSettings: "",
 };
 
 export default function defaultReducer(state = INITIAL_STATE, action) {
@@ -29,5 +31,7 @@ const functionGetSettings = (state, { settings }) => {
     shippingTaxSettings: settings.ShippingTaxSettings,
     appBannerSettings: settings.AppBannerSettings,
     appBannerPublicIdSettings: settings.AppBannerPublicIdSettings,
+    appLogoPSettings: settings.AppLogoPSettings,
+    appLogoPPublicIdSettings: settings.AppLogoPPublicIdSettings,
     };
 };

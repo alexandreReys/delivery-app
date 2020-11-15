@@ -7,7 +7,6 @@ import { debounce } from "lodash";
 
 import { Feather } from "@expo/vector-icons";
 
-import logo from "../../../assets/logo-shopping-list.png";
 import * as masks from "../../utils/masks";
 import * as utils from "../../utils";
 import * as defs from "../../configs/default";
