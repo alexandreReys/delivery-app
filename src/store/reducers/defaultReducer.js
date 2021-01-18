@@ -3,12 +3,26 @@ const INITIAL_STATE = {
   loadingText: "Acessando dados ...",
   errorMsgText: "Verificando ...",
   adminModule: false,
+
   addressSellerSettings: "",
   shippingTaxSettings: 0,
+  
+  webBannerSettings: "",
+  webBannerPublicIdSettings: "",
+  
   appBannerSettings: "",
   appBannerPublicIdSettings: "",
+  
   appLogoPSettings: "",
   appLogoPPublicIdSettings: "",
+  
+  deliveryAreaDistance: 0,
+  urlDeliveryMap: "",
+  urlGooglePlay: "",
+  
+  contactPhone: "",
+  contactEmail: "",
+  contactWhatsapp: "",
 };
 
 export default function defaultReducer(state = INITIAL_STATE, action) {
@@ -29,9 +43,17 @@ const functionGetSettings = (state, { settings }) => {
     ...state,
     addressSellerSettings: settings.AddressSellerSettings,
     shippingTaxSettings: settings.ShippingTaxSettings,
+    webBannerSettings: settings.WebBannerSettings,
+    webBannerPublicIdSettings: settings.WebBannerPublicIdSettings,
     appBannerSettings: settings.AppBannerSettings,
     appBannerPublicIdSettings: settings.AppBannerPublicIdSettings,
     appLogoPSettings: settings.AppLogoPSettings,
     appLogoPPublicIdSettings: settings.AppLogoPPublicIdSettings,
-    };
+    deliveryAreaDistance: settings.DeliveryAreaDistance,
+    urlDeliveryMap: settings.UrlDeliveryMap,
+    urlGooglePlay: settings.UrlGooglePlay,
+    contactPhone: settings.ContactPhone,
+    contactEmail: settings.ContactEmail,
+    contactWhatsapp: settings.ContactWhatsapp,
+  };
 };

@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "adegadavilla",
-    "slug": "adegadavilla",
+    "name": "davillaadegaliviero",
+    "slug": "davillaadegaliviero",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -22,12 +22,13 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "br.com.davillaadega",
-      "buildNumber": "1.0.2"
+      "bundleIdentifier": "br.com.davillaadegaliviero",
+      "buildNumber": "1.0.3"
     },
     "android": {
-      "package": "br.com.davillaadega",
-      "versionCode": 2,
+      "package": "br.com.davillaadegaliviero",
+      "permissions": [],
+      "versionCode": 3,
       "useNextNotificationsApi": true
     }
   }

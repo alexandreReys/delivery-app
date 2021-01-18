@@ -3,8 +3,6 @@ import { api } from "../services/api";
 import store from "../store";
 import { actionSetOrder, actionGetDeliveryAddress } from "../store/actions";
 
-
-
 export const postOrder = async () => {
   let shoppingCart = store.getState().cartState;
   let deliveryAddress = store.getState().addressState;
@@ -53,11 +51,6 @@ export const postOrder = async () => {
 
   return resp.data;
 };
-
-
-
-
-
 
 export const getOrders = async (status) => {
   var response;
@@ -164,3 +157,14 @@ export const getCep = async (postalCode) => {
 
   return address.data;
 };
+
+export const updateRatingOrder = async (id, rating) => {
+  try {
+    await api.put(`/delivery-order/rating/${id}/${rating}`);
+  } catch (error) {
+    console.error("ErrorMessage: updateRatingOrder error:", error);
+    return null;
+  }
+  return;
+};
+

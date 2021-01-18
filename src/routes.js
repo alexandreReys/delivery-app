@@ -12,6 +12,7 @@ import SeeAll from "./pages/see-all/SeeAll";
 import Search from "./pages/search/Search";
 import Main from "./pages/main/Main";
 import Comments from "./pages/comments/Comments";
+import Carrousel from "./components/carrousel";
 
 
 const Routes = createAppContainer(
@@ -59,6 +60,10 @@ const Routes = createAppContainer(
       },
       Comments: {
         screen: Comments,
+        navigationOptions: { headerShown: false },
+      },
+      Carrousel: {
+        screen: Carrousel,
         navigationOptions: { headerShown: false },
       },
     },

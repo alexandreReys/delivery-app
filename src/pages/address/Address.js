@@ -3,6 +3,7 @@ import {
     KeyboardAvoidingView, StyleSheet, TouchableOpacity,
     View, Text, TextInput, ScrollView, Alert, BackHandler
 } from "react-native";
+
 import { Feather } from "@expo/vector-icons";
 
 import store from "../../store";
@@ -13,14 +14,16 @@ import * as utils from "../../utils";
 import * as defs from "../../configs/default";
 import * as orderService from "../../services/orderService";
 import * as mapsService from "../../services/mapsService";
+import * as settingsService from "../../services/settingsService";
 import Loader from "../../components/Loader";
-
 
 const Address = ({ navigation }) => {
 
     const [returnRoute] = useState(navigation.state.params);
 
     const [loading, setLoading] = useState(false);
+    const [deliveryAreaDistance, setDeliveryAreaDistance] = useState(0);
+
 
     const [name, setName] = useState(store.getState().addressState.name);
     const [document, setDocument] = useState(store.getState().addressState.document);
@@ -41,6 +44,19 @@ const Address = ({ navigation }) => {
 
     useEffect(() => {
         BackHandler.addEventListener('hardwareBackPress', () => true);
+
+        (async function getSettings() {
+            if (!deliveryAreaDistance || deliveryAreaDistance === 0) {
+                if ( 
+                    !store.getState().defaultState.deliveryAreaDistance || 
+                    store.getState().defaultState.deliveryAreaDistance === 0
+                ) {
+                    await settingsService.get();
+                };
+                setDeliveryAreaDistance(store.getState().defaultState.deliveryAreaDistance);
+            };
+        })();
+
         if (!postalCode) {
             setOnEdit(true);
         };
@@ -55,10 +71,19 @@ const Address = ({ navigation }) => {
         
         const distances = await mapsService.googleDistance( addr );
         
-        if ( distances.distance.value > 10000 ) {
+        const customerDistance = (distances.distance.value / 1000).toFixed(2);
+
+        if ( customerDistance > deliveryAreaDistance ) {
             store.dispatch( actionCartReset() );
-            utils.showAlert( "Infelizmente você se encontra fora de nossa area de entrega !!" );
-        }
+
+            utils.showAlert( "Sinto Muito ...", 
+            
+`Infelizmente você se encontra fora de nossa area de entrega !! 
+            
+Atendemos uma área de ${deliveryAreaDistance} kms e você se encontra a ${customerDistance} kms`
+
+            );
+        };
 
         navigation.navigate(returnRoute);
     };

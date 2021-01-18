@@ -21,6 +21,8 @@ import store from "../../store";
 import { actionGetCategories, actionSelectProduct } from "../../store/actions";
 
 import Loader from "../../components/Loader";
+import Carrousel from "../../components/carrousel"
+
 // import LottieView from 'lottie-react-native';
 
 const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
@@ -192,38 +194,41 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 const MainContent = ({ products, navigation }) => {
 
     const AppBanner = () => {
         let styles = StyleSheet.create({
-            mainContainer: {
-                flexDirection: "row",
-                justifyContent: "center"
-            },
-            imageContainer: {
-                marginVertical: 10,
-                width: "95%",
-                height: 200,
-                borderRadius: 10,
-                backgroundColor: "silver",
-                elevation: 5,
-            },
-            image: {
-                height: "98%",
-                width: "99%",
-                borderRadius: 5,
-                resizeMode: "stretch",
-            },
+            // mainContainer: {
+            //     flexDirection: "row",
+            //     justifyContent: "center"
+            // },
+            // imageContainer: {
+            //     // marginVertical: 10,
+            //     width: "95%",
+            //     height: 200,
+            //     borderRadius: 10,
+            //     backgroundColor: "silver",
+            //     elevation: 5,
+            // },
+            // image: {
+            //     height: "98%",
+            //     width: "99%",
+            //     borderRadius: 5,
+            //     resizeMode: "stretch",
+            // },
         });
         return (
-            <View style={ styles.mainContainer }>
-                <View style={styles.imageContainer}>
-                    <Image
-                        source={{ uri: store.getState().defaultState.appBannerSettings }}
-                        style={ styles.image }/>
-                </View>
+            // <View style={ styles.mainContainer }>
+                // <View style={styles.imageContainer}> 
+                    // <Image
+                    //     source={{ uri: store.getState().defaultState.appBannerSettings }}
+                    //     style={ styles.image }/> */}
+                // </View>
+            // </View>
+
+            <View>
+                <Carrousel />
             </View>
         );
     };
@@ -495,6 +500,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
     },
 });
+
 
 
 export default connect((state) => ({

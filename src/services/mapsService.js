@@ -8,41 +8,40 @@ export const nominatimReverseGeocoding = (latitude, longitude, callback) => {
     const parZoom = "&zoom=18&addressdetails=1";
     var resp = {};
 
-    apiExt.get( `${urlBase}${parLatitude}${parLongitude}${parZoom}` )
+    apiExt.get(`${urlBase}${parLatitude}${parLongitude}${parZoom}`)
         .then((response) => {
             resp = response.data.address;
             return callback(resp);
         });
 };
-  // exemplo de uso
-  //
-  // nominatimReverseGeocoding(-23.627212, -46.561431, (response) => {console.log(response)} );
-  //
-  // response = {
-  //   "city": "São Caetano do Sul",
-  //   "city_district": "São Caetano do Sul",
-  //   "country": "Brasil",
-  //   "country_code": "br",
-  //   "postcode": "09570-320",
-  //   "quarter": "Vila Paula",
-  //   "region": "Região Sudeste",
-  //   "road": "Avenida Tijucussu",
-  //   "state": "São Paulo",
-  //   "suburb": "Olímpico", 
-  // }
+// exemplo de uso
+//
+// nominatimReverseGeocoding(-23.627212, -46.561431, (response) => {console.log(response)} );
+//
+// response = {
+//   "city": "São Caetano do Sul",
+//   "city_district": "São Caetano do Sul",
+//   "country": "Brasil",
+//   "country_code": "br",
+//   "postcode": "09570-320",
+//   "quarter": "Vila Paula",
+//   "region": "Região Sudeste",
+//   "road": "Avenida Tijucussu",
+//   "state": "São Paulo",
+//   "suburb": "Olímpico", 
+// }
 
 export const googleDistance = async (address) => {
     var resp;
     await api.get(`/delivery-settings/distance/${address}`)
-        .then((response)=> {
+        .then((response) => {
             resp = response;
         })
-        .catch((error)=>{
+        .catch((error) => {
             console.log("==> ERROR : googleDistance.get ", error);
             return null;
         });
-
-        return resp.data;
+    return resp.data;
 };
 // exemplo de uso
 //
