@@ -1,5 +1,5 @@
 // export const confirmButtonColor = () => "#ffcc00";
-export const confirmButtonColor = () => "#3949ab";
+export const confirmButtonColor = () => "#501390";//"#3949ab";
 // export const confirmButtonTextColor = () => "navy";
 export const confirmButtonTextColor = () => "white";
 export const confirmButtonBorderWidth = () => 1;

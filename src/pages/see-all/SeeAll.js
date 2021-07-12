@@ -5,6 +5,7 @@ import {
 } from "react-native";
 
 import { Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 import noImage from "../../../assets/no-image.png";
 import * as masks from "../../utils/masks";
@@ -26,7 +27,7 @@ const SeeAll = ({ navigation }) => {
 
         async function getProductsByCategory() {
             let data;
-            if (navigation.state.params.category === "Promoção") {
+            if (navigation.state.params.category === "PROMOÇÃO") {
                 let products = await productService.getActiveProductsInPromotion();
                 data = products.map((product) => utils.adjustPromotionalPrice(product));
             } else {
@@ -75,7 +76,9 @@ const Products = ({ products, navigation }) => {
 };
 
 const Product = ({ product, navigation }) => {
-    const precoVinho = masks.moneyMask(product.PrecoVinho);
+
+    const { precoVinho, precoAnterVinho } = utils.getPrice(product);
+    
     const img = product.Imagem1Vinho;
 
     return (
@@ -88,36 +91,68 @@ const Product = ({ product, navigation }) => {
                     quantity: 1,
                     price: product.PrecoVinho,
                     image: img,
+
+                    productPrice: product.PrecoVinho,
+                    priceVariation: product.PriceProductVariation ? product.PriceProductVariation : 0,
+                    quantityVariation: product.QuantityProductVariation ? product.QuantityProductVariation : 0,
+                    descriptionVariation: product.DescriptionProductVariation,
                 };
                 store.dispatch(actionSelectProduct(param));
-                navigation.navigate('SelectedItem');
+                navigation.navigate('SelectedItem', 'SeeAll');
             }}
         >
-            <View style={productStyles.productBox}>
+            <View style={[productStyles.productBox, {width: '45%'}]}>
                 <View style={productStyles.imageContainer}>
                     {!!product.Imagem1Vinho && (
                         <Image
                             style={productStyles.image}
                             source={{ uri: img }}
-                            resizeMode={"contain"}
+                            // resizeMode={"contain"}
                         />
                     )}
                     {!product.Imagem1Vinho &&
                         <Image
                             style={productStyles.image}
                             source={noImage}
-                        />}
+                        />
+                    }
                 </View>
-                <View style={productStyles.descriptionContainer}>
+
+                <View 
+                    style={[
+                        productStyles.descriptionContainer, 
+                        { marginBottom: product.QuantityProductVariation > 0 ? 5 : 30 }
+                    ]}
+                >
                     <Text style={productStyles.description}>
                         {utils.filterDesc25(product.DescricaoVinho)}
                     </Text>
                 </View>
+                
+                { product.QuantityProductVariation > 0 && 
+                    <View style={productStyles.descriptionVariation}>
+                        <Text style={productStyles.descriptionVariationText}>
+                            {product.DescriptionProductVariation}
+                        </Text>
+                    </View>
+                }
+
                 <View style={productStyles.priceContainer}>
-                    <Text style={productStyles.price}>
-                        {precoVinho}
-                    </Text>
+                    <View style={[{ flexDirection: "row" }]}>
+                        
+                    <Text style={!product.EmPromocaoVinho ? productStyles.price : productStyles.priceLine}>
+                            {precoAnterVinho}
+                        </Text>
+
+                        {!!product.EmPromocaoVinho && (
+                            <Text style={productStyles.price}>
+                                {precoVinho}
+                            </Text>
+                        )}
+
+                    </View>
                 </View>
+
             </View>
         </TouchableWithoutFeedback>
     );
@@ -163,11 +198,17 @@ const productStyles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 30,
         paddingLeft: 2,
-
     },
     description: {
         fontSize: 14,
         color: "grey",
+    },
+    descriptionVariation: {
+        marginBottom: 30,
+    },
+    descriptionVariationText: {
+        fontSize: 10, 
+        color: 'red',
     },
     priceContainer: {
         position: 'absolute',
@@ -177,6 +218,14 @@ const productStyles = StyleSheet.create({
     price: {
         fontWeight: "bold",
         fontSize: 16,
+    },
+    priceLine: {
+        paddingTop: 5,
+        fontSize: 10,
+        textDecorationStyle: 'solid',
+        textDecorationLine: 'line-through',
+        color: "red",
+        marginRight: 5,
     },
 });
 

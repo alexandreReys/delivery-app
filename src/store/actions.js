@@ -47,6 +47,9 @@ export function actionSetProductCategory(category) {
 export function actionCartReset() {
   return { type: "ACTION_CART_RESET" };
 };
+export function actionCartRecalculate(shippingTaxInfo) {
+  return { type: "ACTION_CART_RECALCULATE", shippingTaxInfo };
+};
 export function actionSelectProduct(product) {
   return { type: "ACTION_SELECT_PRODUCT", product };
 };
@@ -65,6 +68,10 @@ export function actionSelectPaymentType(paymentTypeData) {
 export function actionSetComments(comments) {
   return { type: "ACTION_SET_COMMENTS", comments };
 };
+export function actionSetCustomerDistance(customerDistance) {
+  return { type: "ACTION_SET_CUSTOMER_DISTANCE", customerDistance };
+};
+
 export function actionGetDeliveryAddress(address) {
   return { type: "ACTION_GET_DELIVERY_ADDRESS", address };
 };

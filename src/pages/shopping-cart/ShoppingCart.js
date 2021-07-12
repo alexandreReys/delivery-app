@@ -1,20 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet, KeyboardAvoidingView, View,
-    Text, TouchableOpacity, ScrollView
+    Text, TouchableOpacity, ScrollView, Image,
 } from "react-native";
 import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
+
+import CartItens from '../../components/CartItens';
 import store from "../../store";
+import * as actions from "../../store/actions";
 import * as masks from "../../utils/masks";
+import * as utils from "../../utils";
 import * as def from "../../configs/default";
 
-const ShoppingCart = ({ navigation, addedItems, quantityOfItems }) => {
+const ShoppingCart = ({ navigation, quantityOfItems }) => {
+    
+    if (!quantityOfItems) {
+        return navigation.navigate('ShoppingList');
+    };
+    
+    const [addr, setAddr] = useState( store.getState().addressState );
+
     const subtotal = masks.moneyMask(store.getState().cartState.subtotal);
     const shipping = masks.moneyMask(store.getState().cartState.shipping);
     const total = masks.moneyMask(store.getState().cartState.total);
 
-    const addr = store.getState().addressState;
+    useEffect(() => {
+        setAddr( store.getState().addressState );
+    }, []);
 
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
@@ -25,124 +38,116 @@ const ShoppingCart = ({ navigation, addedItems, quantityOfItems }) => {
                     name="arrow-left"
                     onPress={() => { navigation.navigate('ShoppingList') }}
                 />
-                <Text style={{ fontSize: 24, color: "#777777" }}>Sacola</Text>
+                <Text style={{ fontSize: 22, fontWeight: 'bold', color: "silver" }}>
+                    Sacola
+                </Text>
                 <Text style={{ width: 50 }}></Text>
             </View>
 
-            <View style={styles.addressContainer}>
-                <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                    <Feather
-                        style={{ fontSize: 22, color: "#777777" }}
-                        name="map-pin"
-                        onPress={() => { navigation.navigate('ShoppingList') }}
-                    />
-                </View>
-                <View style={{ width: "78%", }}>
-                    <Text style={{ fontSize: 16, color: "#000", fontWeight: "bold" }}>
-                        Receber agora em
-                    </Text>
-                    <Text style={{ fontSize: 16, color: "#777" }}>
-                        {`${addr.street}, ${addr.number}`}
-                    </Text>
-                    <Text style={{ fontSize: 16, color: "#777" }}>
-                        {`${addr.neighborhood}, ${addr.city}, ${addr.state}`}
-                    </Text>
-                </View>
-                <View style={{ width: "10%", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
-                    <Feather
-                        style={{ fontSize: 22, color: "#777777" }}
-                        name="edit"
-                        onPress={() => { navigation.navigate('Address', 'ShoppingCart') }}
-                    />
-                </View>
-            </View>
+            <TouchableOpacity style={styles.finalizeContainer}
+                onPress={() => {
+                    navigation.navigate('Payment');
+                }}
+            >
+                <Text style={{color: "maroon", fontWeight: 'bold'}}>
+                    Finalizar Compra
+                </Text>                
+            </TouchableOpacity>
 
-            <View style={styles.resumeContainer}>
-                <View style={styles.resumeItems}>
-                    <View>
-                        <Text style={styles.resumeText}>{quantityOfItems} produto(s)</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.resumeText}>{subtotal}</Text>
-                    </View>
-                </View>
+            <ScrollView>
 
-                <View style={styles.resumeShipping}>
-                    <View>
-                        <Text style={styles.resumeText}>Frete</Text>
+                <CartItens />
+
+                <View style={styles.addressContainer}>
+                    <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                        <Feather
+                            style={{ fontSize: 22, color: "#731cac" }}
+                            name="map-pin"
+                            onPress={() => { navigation.navigate('ShoppingList') }}
+                        />
                     </View>
-                    <View>
-                        <Text style={styles.resumeText}>{shipping}</Text>
+                    <View style={{ width: "78%", }}>
+                        <Text style={{ fontSize: 16, color: "navy", fontWeight: "bold" }}>
+                            Receber agora em
+                        </Text>
+                        <Text style={{ fontSize: 16, color: "#777" }}>
+                            {`${addr.street}, ${addr.number}`}
+                        </Text>
+                        <Text style={{ fontSize: 16, color: "#777" }}>
+                            {`${addr.neighborhood}, ${addr.city}, ${addr.state}`}
+                        </Text>
+                    </View>
+                    <View style={{ width: "10%", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
+                        <Feather
+                            style={{ fontSize: 22, color: "#721cac" }}
+                            name="edit"
+                            onPress={() => { navigation.navigate('Address', 'ShoppingList') }}
+                        />
                     </View>
                 </View>
 
-                <View style={styles.resumeTotal}>
-                    <View>
-                        <Text style={styles.resumeTextTotal}>Total</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.resumeTextTotal}>{total}</Text>
-                    </View>
-                </View>
+                <View style={styles.resumeContainer}>
 
-                <TouchableOpacity
-                    style={styles.continueContainer}
-                    onPress={() => {
-                        navigation.navigate('Payment');
-                    }}
-                >
-                    <Text style={styles.continue}>
-                        Pagar
-                    </Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.keepBuyingContainer}
-                    onPress={() => {
-                        navigation.navigate('ShoppingList');
-                    }}
-                >
-                    <Text style={styles.keepBuying}>
-                        Comprar mais
-                    </Text>
-                </TouchableOpacity>
-
-            </View>
-
-            <View style={styles.itemsHeaderContainer}>
-                <View style={styles.header1}>
-                    <Text style={styles.headerText}>Produto</Text>
-                </View>
-                <View style={styles.header2}>
-                    <Text style={styles.headerText}>Qtde</Text>
-                </View>
-                <View style={styles.header3}>
-                    <Text style={styles.headerText}>Preço</Text>
-                </View>
-            </View>
-
-            <ScrollView style={styles.itemsDetails}>
-                {addedItems.map((item) => {
-                    const price = masks.moneyMask(item.price);
-                    return (
-                        <View key={item.description} style={styles.itemsDetailsContainer}>
-                            <View style={styles.det1}>
-                                <Text>{item.description}</Text>
-                            </View>
-                            <View style={styles.det2}>
-                                <Text>{item.quantity}</Text>
-                            </View>
-                            <View style={styles.det3}>
-                                <Text>{price}</Text>
-                            </View>
+                    <View style={styles.resumeItems}>
+                        <View>
+                            <Text style={styles.resumeText}>{quantityOfItems} produto(s)</Text>
                         </View>
-                    )
-                })}
-            </ScrollView>
+                        <View>
+                            <Text style={styles.resumeText}>{subtotal}</Text>
+                        </View>
+                    </View>
 
+                    <View style={styles.resumeShipping}>
+                        <View>
+                            <Text style={styles.resumeText}>Frete</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.resumeText}>{shipping}</Text>
+                        </View>
+                    </View>
+
+
+                    <View style={styles.resumeTotal}>
+                        <View>
+                            <Text style={styles.resumeTextTotal}>Total</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.resumeTextTotal}>{total}</Text>
+                        </View>
+                    </View>
+
+
+                    <TouchableOpacity
+                        style={styles.continueContainer}
+                        onPress={() => {
+                            navigation.navigate('Payment');
+                        }}
+                    >
+                        <Text style={styles.continue}>
+                            Finalizar Compra
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.keepBuyingContainer}
+                        onPress={() => {
+                            navigation.navigate('ShoppingList');
+                        }}
+                    >
+                        <Text style={styles.keepBuying}>
+                            Adicionar mais produtos
+                        </Text>
+                    </TouchableOpacity>
+
+                </View>
+
+
+            </ScrollView>
 
         </KeyboardAvoidingView>
     );
+
 };
 
 const styles = StyleSheet.create({
@@ -160,6 +165,26 @@ const styles = StyleSheet.create({
         fontSize: 28,
         color: "#777777"
     },
+    finalizeContainer: {
+        marginTop: 15,
+        marginBottom: 20,
+        marginHorizontal: 20,
+        paddingVertical: 10,
+        
+        backgroundColor: '#deeffe',
+        borderStyle: 'solid',
+        borderColor: "gray",
+        borderRadius: 10,
+        elevation: 4,
+
+        flexDirection: "row",
+        justifyContent: "center",
+        
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.27,
+        shadowRadius: 4.65,
+    },
     addressContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -171,51 +196,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         flexDirection: "row",
     },
-    itemsDetails: {
-        // backgroundColor: "white",
-    },
-    itemsDetailsContainer: {
-        marginTop: 5,
-        marginHorizontal: 20,
-        flexDirection: "row",
-    },
-
-    header1: {
-        fontWeight: "bold",
-        width: "60%",
-    },
-    header2: {
-        flexDirection: "row",
-        justifyContent: "center",
-        fontWeight: "bold",
-        width: "20%",
-    },
-    header3: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        fontWeight: "bold",
-        width: "20%",
-    },
-    headerText: {
-        fontWeight: "bold",
-        fontSize: 18,
-        color: "#000",
-    },
-
-    det1: {
-        width: "60%",
-    },
-    det2: {
-        flexDirection: "row",
-        justifyContent: "center",
-        width: "20%",
-    },
-    det3: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        width: "20%",
-    },
-
     resumeContainer: {
         marginHorizontal: 20,
     },
@@ -225,14 +205,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
         paddingHorizontal: 10,
     },
-
     resumeShipping: {
         flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 10,
         paddingHorizontal: 10,
     },
-
     resumeTotal: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -256,17 +234,52 @@ const styles = StyleSheet.create({
     keepBuyingContainer: {
         flexDirection: "row",
         justifyContent: "center",
-        marginVertical: 30,
+        marginTop: 10,
+        marginBottom: 50,
     },
     keepBuying: {
-        fontSize: 20,
-        textDecorationLine: "underline",
-        color: "blue",
+        fontSize: 16,
+        color: "grey",
     },
+
+
+    // itemsDetailsContainer: {
+    //     marginTop: 15,
+    //     marginHorizontal: 20,
+    //     paddingVertical: 10,
+
+    //     backgroundColor: 'white',
+    //     borderStyle: 'solid',
+    //     borderColor: "gray",
+    //     borderRadius: 10,
+    //     elevation: 4,
+
+    //     flexDirection: "row",
+
+    //     shadowColor: "#000",
+    //     shadowOffset: { width: 0, height: 3 },
+    //     shadowOpacity: 0.27,
+    //     shadowRadius: 4.65,
+    // },
+    // qttyContainer: {
+    //     marginTop: 5,
+    //     borderStyle: 'solid',
+    //     borderColor: "silver",
+    //     borderWidth: 1,
+    //     borderRadius: 10,
+    //     paddingHorizontal: 10,
+    //     flexDirection: "row",
+    //     alignItems: "center",
+    //     justifyContent: "space-between",
+    // },
+    // detText: {
+    //     fontSize: 13,
+    //     color: "black",
+    // },
+
 
 });
 
 export default connect((state) => ({
-    addedItems: state.cartState.addedItems,
     quantityOfItems: state.cartState.quantityOfItems,
 }))(ShoppingCart);

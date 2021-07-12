@@ -88,6 +88,7 @@ const Search = ({ navigation }) => {
                 {products.map((product) => {
 
                     product = utils.adjustPromotionalPrice(product);
+                    const { precoVinho, precoAnterVinho } = utils.getPrice(product);
 
                     const img = product.Imagem1Vinho;
                     return (
@@ -100,30 +101,53 @@ const Search = ({ navigation }) => {
                                     quantity: 1,
                                     price: product.PrecoVinho,
                                     image: img,
+
+                                    productPrice: product.PrecoVinho,
+                                    priceVariation: product.PriceProductVariation ? product.PriceProductVariation : 0,
+                                    quantityVariation: product.QuantityProductVariation ? product.QuantityProductVariation : 0,
+                                    descriptionVariation: product.DescriptionProductVariation,
                                 };
                                 store.dispatch(actionSelectProduct(param));
                                 navigation.navigate('SelectedItem');
                             }}
                         >
-                            <View style={{ flexDirection: "row", marginBottom: 20, marginHorizontal: 20, backgroundColor: "white", elevation: 5 }}
+                            <View style={{ flexDirection: "row", marginBottom: 20, marginHorizontal: 20, backgroundColor: "white", elevation: 5, borderRadius: 10 }}
                             >
                                 <View
-                                    style={{ width: "30%", flexDirection: "row", justifyContent: "center", alignItems: "flex-end" }}
+                                    style={{ width: "20%", flexDirection: "row", justifyContent: "center", alignItems: "flex-end" }}
                                 >
                                     <Image
-                                        style={{ height: 80, width: 80 }}
+                                        style={{ height: 80, width: 80, borderRadius: 15, marginTop: 5, marginLeft: 10, marginBottom: 10 }}
                                         source={utils.getImage(product.Imagem1Vinho)}
                                         resizeMode={"contain"}
                                     />
                                 </View>
-                                <View style={{ width: "70%" }}>
-                                    <Text style={{ marginTop: 10, paddingRight: 0, fontSize: 16, color: "#555" }}>
+
+                                <View style={{ width: "70%", marginLeft: 20 }}>
+                                    <Text style={{ marginTop: 10, paddingRight: 0, fontSize: 14, color: "#555", marginBottom: product.QuantityProductVariation > 0 ? 5 : 10 }}>
                                         {product.DescricaoVinho}
                                     </Text>
-                                    <Text style={{ marginTop: 15, marginBottom: 15, fontSize: 16, fontWeight: "bold", color: "#555" }}>
-                                        {masks.moneyMask(product.PrecoVinho)}
+
+                                    {product.QuantityProductVariation > 0 &&
+                                        <View style={{ marginBottom: 0 }}>
+                                            <Text style={{ fontSize: 14, color: "red" }}>
+                                                {product.DescriptionProductVariation}
+                                            </Text>
+                                        </View>
+                                    }
+
+                                    <Text style={!product.EmPromocaoVinho ? productsStyles.price : productsStyles.priceLine}>
+                                        {precoAnterVinho}
                                     </Text>
+
+                                    {!!product.EmPromocaoVinho && (
+                                        <Text style={productsStyles.price}>
+                                            {precoVinho}
+                                        </Text>
+                                    )}
+
                                 </View>
+
                             </View>
                         </TouchableWithoutFeedback>
                     )
@@ -191,6 +215,24 @@ const searchStyles = StyleSheet.create({
         height: 30,
         width: "15%",
     }
+});
+
+const productsStyles = StyleSheet.create({
+    priceLine: {
+        paddingTop: 5,
+        fontSize: 14,
+        textDecorationStyle: 'solid',
+        textDecorationLine: 'line-through',
+        color: "red",
+        marginRight: 5,
+    },
+    price: {
+        marginTop: 2,
+        marginBottom: 15,
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#555"
+    },
 });
 
 export default Search;

@@ -8,6 +8,7 @@ const INITIAL_STATE = {
     paymentType: "",
     changeValue: 0,
     comments: "",
+    customerDistance: 0,
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -15,6 +16,9 @@ export default function cartReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
         case "ACTION_CART_RESET":
             return actionCartReset(state);
+
+        case "ACTION_CART_RECALCULATE":
+            return actionCartRecalculate(state, action);
 
         case "ACTION_SELECT_PRODUCT":
             return actionSelectProduct(state, action);
@@ -34,6 +38,9 @@ export default function cartReducer(state = INITIAL_STATE, action) {
         case "ACTION_SET_COMMENTS":
             return actionSetComments(state, action);
 
+        case "ACTION_SET_CUSTOMER_DISTANCE":
+            return setCustomerDistance(state, action);
+
         default:
             return state;
     }
@@ -51,6 +58,24 @@ const actionCartReset = (state) => {
         total: 0,
         paymentType: "",
         changeValue: 0,
+        comments: "",
+        customerDistance: 0,
+    };
+};
+
+const actionCartRecalculate = (state, { shippingTaxInfo }) => {
+    
+    if (!shippingTaxInfo.deliveryAreaDistance2) return state;
+    if (!state.customerDistance) return state;
+
+    const shippingTax = state.customerDistance <= shippingTaxInfo.deliveryAreaDistance2
+        ? shippingTaxInfo.shippingTax2Settings
+        : shippingTaxInfo.shippingTaxSettings;
+    
+    return {
+        ...state,
+        shipping: shippingTax,
+        total: (state.subtotal + shippingTax),
     };
 };
 
@@ -61,13 +86,17 @@ const actionSelectProduct = (state, { product }) => {
     };
 };
 
-// itemToAdd = id:  description:  quantity:  price:  image:
 const actionAddToCart = (state, { itemToAdd }) => {
     var newState;
-    const stateAddedItem = state.addedItems.find((item) => item.id === itemToAdd.id);
-    const qtty = !stateAddedItem ? itemToAdd.quantity : itemToAdd.quantity + stateAddedItem.quantity;
-    const price = qtty >= 3 ? 2 : itemToAdd.price;
+   
+    const stateAddedItem = 
+        state.addedItems.find((item) => { 
+            return item.id === itemToAdd.id && item.price === itemToAdd.price 
+        });
+    
+    const price = itemToAdd.price;
     const itemToAddTotal = price * itemToAdd.quantity;
+    const efectiveShippingTax = itemToAdd.shippingTax;
 
     if (stateAddedItem) {
         stateAddedItem.quantity += itemToAdd.quantity;
@@ -75,28 +104,31 @@ const actionAddToCart = (state, { itemToAdd }) => {
         const subt = state.addedItems.reduce( (acc, item) => acc + (item.price * item.quantity), 0);
         newState = {
             ...state,
-            shipping: itemToAdd.shippingTax,
+            shipping: efectiveShippingTax,
             quantityOfItems: state.quantityOfItems + itemToAdd.quantity,
             subtotal: subt,
-            total: (subt + itemToAdd.shippingTax),
+            total: (subt + efectiveShippingTax),
         };
     } else {
         itemToAdd.price = price;   //  PREÇO PROMOC. POR QTDE
         newState = {
             ...state,
             addedItems: [...state.addedItems, itemToAdd],
-            shipping: itemToAdd.shippingTax,
+            shipping: efectiveShippingTax,
             quantityOfItems: state.quantityOfItems + itemToAdd.quantity,
             subtotal: state.subtotal + itemToAddTotal,
-            total: (state.subtotal + itemToAdd.shippingTax) + itemToAddTotal,
+            total: (state.subtotal + efectiveShippingTax) + itemToAddTotal,
         };
     };
     return newState;
 };
 
-// itemToSub = id:  quantity:  price:
 const actionSubFromCart = (state, { itemToSub }) => {
-    const stateAddedItem = state.addedItems.find((item) => item.id === itemToSub.id);
+    const stateAddedItem = 
+        state.addedItems.find((item) => { 
+            return item.id === itemToSub.id && item.price === itemToSub.price
+        });
+
     let itemTotal = itemToSub.price * itemToSub.quantity;
 
     if (stateAddedItem) {
@@ -116,23 +148,20 @@ const actionSubFromCart = (state, { itemToSub }) => {
 };
 
 const actionRemoveFromCart = (state, { itemToRemove }) => {
-    const removedItem = state.addedItems.find(
-        (item) => item.id === itemToRemove.id
-    );
-    let itemTotal = removedItem.price * removedItem.quantity;
-
-    if (removedItem) {
-        return {
-            ...state,
-            addedItems: state.addedItems.filter(
-                (item) => item.id !== itemToRemove.id
-            ),
-            quantityOfItems: state.quantityOfItems - removedItem.quantity,
-            subtotal: state.subtotal - itemTotal,
-            total: state.subtotal - itemTotal + state.shipping,
-        };
-    }
-    return { ...state };
+    let itemTotal = itemToRemove.price * itemToRemove.quantity;
+    return {
+        ...state,
+        addedItems: [...state.addedItems.filter( it => {
+            if (it.id == itemToRemove.id)
+              if (it.price == itemToRemove.price)
+                return false;
+            
+            return true;
+        })],
+        quantityOfItems: state.quantityOfItems - itemToRemove.quantity,
+        subtotal: state.subtotal - itemTotal,
+        total: state.subtotal - itemTotal + state.shipping,
+    };
 };
 
 const actionSelectPaymentType = (state, { paymentTypeData }) => {
@@ -147,5 +176,12 @@ const actionSetComments = (state, { comments }) => {
     return {
         ...state,
         comments,
+    };
+};
+
+const setCustomerDistance = (state, { customerDistance }) => {
+    return {
+      ...state,
+      customerDistance,
     };
 };

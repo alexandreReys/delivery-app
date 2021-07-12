@@ -12,7 +12,7 @@ export const getProducts = async () => {
 export const getProductsGroupedByCategory = async () => {
     let resp = [];
     await api
-        .get("/products/category/grouped")
+        .get("/products/category/grouped/selected")
         .then((response) => {
             resp = response;
         })
@@ -48,7 +48,6 @@ export const getProductsByCategory = async (category) => {
 
 export const getActiveProductsByCategory = async (category) => {
     const params = { params: { Category: category } };
-
     return await api
         .get("/products/category/actives", params)
         .then((response) => {

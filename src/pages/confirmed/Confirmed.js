@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
     KeyboardAvoidingView, BackHandler,
-    StyleSheet, View, Text, ScrollView,
+    StyleSheet, View, Text, ScrollView, Linking
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import StepIndicator from 'react-native-step-indicator';
 import { Rating, AirbnbRating } from 'react-native-ratings';
 
@@ -62,9 +63,10 @@ const Confirmed = ({ navigation }) => {
     useEffect(() => {
         myTimer = setInterval(() => {
             if (position > 500) {
+                console.log('timer finish')
                 clearInterval(myTimer);
             } else {
-                checkDeliveryStatus()
+                checkDeliveryStatus();
             };
         }, 15000);
 
@@ -76,6 +78,288 @@ const Confirmed = ({ navigation }) => {
         };
     }, [position])
 
+    return (
+        <KeyboardAvoidingView style={styles.mainContainer}>
+            <View style={styles.header}>
+                <Feather
+                    style={styles.headerIcon}
+                    name="arrow-left"
+                    onPress={() => { 
+                        orderService.updateRatingOrder(insertId, rating);
+                        navigation.navigate('ShoppingList')
+                    }}
+                />
+                <Text style={{ fontSize: 24, color: "#777777" }}>Pedido Confirmado</Text>
+                <Text style={{ width: 50 }}></Text>
+            </View>
+
+            <View>
+                <StepIndicator
+                    customStyles={customStyles}
+                    currentPosition={position}
+                    labels={labels}
+                />
+            </View>
+
+            <View style={styles.orderIdContainer}>
+                <View style={{ width: "10%" }}>
+                    <Feather
+                        style={{ fontSize: 22, color: "#731cac" }}
+                        name="award"
+                    />
+                </View>
+                <View>
+                    <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
+                        Pedido : {insertId}
+                    </Text>
+                </View>
+
+                <View style={{ marginLeft: 50, width: "10%" }}>
+                    <FontAwesome
+                        style={{ fontSize: 22, color: "green" }}
+                        name="whatsapp"
+                        onPress={() => whatsappPress()}
+                    />
+                </View>
+                <View>
+                    <Text 
+                        style={{ fontSize: 14, color: "green", fontWeight: "bold" }}
+                        onPress={() => whatsappPress()}
+                    >
+                        Contato
+                    </Text>
+                </View>
+            </View>
+
+            <View style={styles.line} />
+
+            <View style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    paddingLeft: 25,
+                    marginBottom: 3,
+                }}
+            >
+                <Text style={{fontWeight: "bold", color: "blue"}}>Mostre o quanto foi agradável sua compra</Text>
+            </View>
+
+            <View style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    paddingLeft: 20,
+                    marginBottom: 10,
+                }}
+            >
+                <AirbnbRating
+                    style={{ color: "black"}}
+                    onFinishRating={ratingCompleted}
+                    selectedColor="blue"
+                    reviewColor="blue"
+                    reviewSize={16}
+                    count={5}
+                    showRating={false}
+                    reviews={reviews}
+                    defaultRating={0}
+                    size={20}
+                />
+            </View>
+
+            <ScrollView vertical>
+
+                <View style={{paddingTop: 10, paddingBottom: 80}}>
+
+                    {/* Previsão de Entrega */}
+                    <View style={styles.infoContainer}>
+                        <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                            <Feather
+                                style={{ fontSize: 22, color: "#731cac" }}
+                                name="clock"
+                            />
+                        </View>
+                        <View style={{ width: "88%", }}>
+                            <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
+                                Previsão de entrega
+                            </Text>
+                            <Text style={{ fontSize: 14, color: "#444" }}>
+                                {timeOrder.substr(0, 5)} - {prevision}
+                            </Text>
+                        </View>
+                    </View>
+
+                    {/* Endereço */}
+                    <View style={styles.infoContainer}>
+                        <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                            <Feather
+                                style={{ fontSize: 22, color: "#731cac" }}
+                                name="map-pin"
+                                onPress={() => { navigation.navigate('ShoppingList') }}
+                            />
+                        </View>
+                        <View style={{ width: "88%", }}>
+                            <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
+                                Receber agora em
+                            </Text>
+                            <Text style={{ fontSize: 14, color: "#444" }}>
+                                {`${addr.street}, ${addr.number}`}
+                            </Text>
+                            <Text style={{ fontSize: 14, color: "#444" }}>
+                                {`${addr.neighborhood}, ${addr.city}, ${addr.state}`}
+                            </Text>
+                        </View>
+
+                    </View>
+
+                    {/* Tipo Pagamento */}
+                    <View style={styles.infoContainer}>
+                        <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                            <Feather
+                                style={{ fontSize: 22, color: "#731cac" }}
+                                name="credit-card"
+                                onPress={() => { navigation.navigate('ShoppingList') }}
+                            />
+                        </View>
+                        <View style={{ width: "88%", }}>
+                            <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
+                                Pagamento na entrega
+                </Text>
+                            <Text style={{ fontSize: 14, color: "#444" }}>
+                                {paymentType}
+                            </Text>
+                        </View>
+                    </View>
+
+                    {/* Qtde de Produtos, Frete, Total */}
+                    <View style={
+                        { 
+                            borderWidth: 2, 
+                            borderColor: "#501390", 
+                            marginHorizontal: 20,
+                            marginBottom: 10, 
+                            borderRadius: 15, 
+                            paddingBottom: 20,
+                            backgroundColor: "white",
+                            elevation: 5,
+                        }
+                    }>
+
+                        {/* Qtde de Produtos */}
+                        <View style={styles.totalContainer}>
+                            <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                                <Feather
+                                    style={{ fontSize: 22, color: "#731cac" }}
+                                    name="shopping-cart"
+                                />
+                            </View>
+
+                            <View style={[styles.resumeItems, { width: "90%" }]}>
+                                
+                                <View>
+                                    <Text style={styles.resumeText}>
+                                        {quantityOfItems} produto(s)
+                                    </Text>
+                                </View>
+
+                                <View>
+                                    <Text style={styles.resumeText}>
+                                        {subtotal}
+                                    </Text>
+                                </View>
+
+                            </View>
+                        </View>
+
+                        {/* Frete */}
+                        <View style={styles.totalContainer}>
+                            <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                                <Feather
+                                    style={{ fontSize: 22, color: "#731cac" }}
+                                    name="truck"
+                                />
+                            </View>
+                            <View style={[styles.resumeItems, { width: "90%" }]}>
+                                <View>
+                                    <Text style={styles.resumeText}>
+                                        Frete
+                                    </Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.resumeText}>{shipping}</Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        {/* Total */}
+                        <View style={styles.totalContainer}>
+                            <View style={{flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                                <Feather
+                                    style={{ fontSize: 22, color: "#731cac" }}
+                                    name="dollar-sign"
+                                />
+                            </View>
+                            <View style={[styles.resumeItems, { width: "90%" }]}>
+                                <View>
+                                    <Text style={styles.resumeTextTotal}>Total</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.resumeTextTotal}>{total}</Text>
+                                </View>
+                            </View>
+                        </View>
+
+                    </View>
+
+                    <View style={styles.itemsHeaderContainer}>
+                        <View style={[{ flexDirection: "row" }, styles.header1]}>
+                            <Feather
+                                style={{ fontSize: 22, color: "maroon", marginRight: 10 }}
+                                name="list"
+                            />
+                            <Text style={styles.headerText}>Produtos</Text>
+                        </View>
+                        <View style={styles.header2}>
+                            <Text style={styles.headerText}>Qtde</Text>
+                        </View>
+                    </View>
+
+                    <View>
+                        {addedItems.map((item, idx) => {
+                            return (
+                                <View key={idx} style={styles.itemsDetailsContainer}>
+                                    <View style={styles.det1}>
+                                        <Text>{item.description}</Text>
+                                    </View>
+                                    <View style={styles.det2}>
+                                        <Text>{item.quantity}</Text>
+                                    </View>
+                                </View>
+                            )
+                        })}
+                    </View>
+                
+                </View>
+
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
+
+    function whatsappPress() {
+        let whatsappNumber = 
+            '+55' + store.getState().defaultState.contactWhatsapp.replace(/\D/g, '');
+        
+        let url =
+            'whatsapp://send?text=' + 'testando' + '&phone=' + whatsappNumber;
+            
+        Linking.openURL(url)
+            .then((data) => {
+                // console.log('WhatsApp Opened');
+            })
+            .catch(() => {
+                alert('Não foi possivel acessar seu whatsapp');
+            });
+    };
+    
     function checkDeliveryStatus() {
         async function getOrderStatus() {
             const order = await orderService.getOrder(insertId);
@@ -99,236 +383,6 @@ const Confirmed = ({ navigation }) => {
         setRating(rating);
     };
 
-    return (
-        <KeyboardAvoidingView style={styles.mainContainer}>
-
-            <View style={styles.header}>
-                <Feather
-                    style={styles.headerIcon}
-                    name="arrow-left"
-                    onPress={() => { 
-                        orderService.updateRatingOrder(insertId, rating);
-                        navigation.navigate('ShoppingList')
-                    }}
-                />
-                <Text style={{ fontSize: 24, color: "#777777" }}>Pedido Confirmado</Text>
-                <Text style={{ width: 50 }}></Text>
-            </View>
-
-            <View>
-                <StepIndicator
-                    customStyles={customStyles}
-                    currentPosition={position}
-                    labels={labels}
-                />
-            </View>
-
-            <View style={styles.orderIdContainer}>
-                <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                    <Feather
-                        style={{ fontSize: 22, color: "maroon" }}
-                        name="award"
-                    />
-                </View>
-                <View style={{ width: "88%", }}>
-                    <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
-                        Pedido : {insertId}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={styles.line} />
-
-            <View style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    // backgroundColor: "yellow",
-                    paddingLeft: 25,
-                    marginBottom: 3,
-                }}
-            >
-                <Text style={{fontWeight: "bold", color: "blue"}}>Mostre o quanto foi agradavel sua compra</Text>
-            </View>
-
-            <View style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    // backgroundColor: "yellow",
-                    paddingLeft: 20,
-                    marginBottom: 20,
-                }}
-            >
-                <AirbnbRating
-                    style={{ color: "black"}}
-                    onFinishRating={ratingCompleted}
-                    selectedColor="blue"
-                    reviewColor="blue"
-                    reviewSize={16}
-                    count={5}
-                    showRating={false}
-                    reviews={reviews}
-                    defaultRating={0}
-                    size={20}
-                />
-            </View>
-
-            <View style={styles.previsionContainer}>
-                <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                    <Feather
-                        style={{ fontSize: 22, color: "maroon" }}
-                        name="clock"
-                    />
-                </View>
-                <View style={{ width: "88%", }}>
-                    <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
-                        Previsão de entrega
-                    </Text>
-                    <Text style={{ fontSize: 14, color: "#444" }}>
-                        {timeOrder.substr(0, 5)} - {prevision}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={styles.line} />
-
-            <View style={styles.addressContainer}>
-                <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                    <Feather
-                        style={{ fontSize: 22, color: "maroon" }}
-                        name="map-pin"
-                        onPress={() => { navigation.navigate('ShoppingList') }}
-                    />
-                </View>
-                <View style={{ width: "88%", }}>
-                    <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
-                        Receber agora em
-                    </Text>
-                    <Text style={{ fontSize: 14, color: "#444" }}>
-                        {`${addr.street}, ${addr.number}`}
-                    </Text>
-                    <Text style={{ fontSize: 14, color: "#444" }}>
-                        {`${addr.neighborhood}, ${addr.city}, ${addr.state}`}
-                    </Text>
-                </View>
-
-            </View>
-
-            <View style={styles.line} />
-
-            <View style={styles.paymentContainer}>
-                <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                    <Feather
-                        style={{ fontSize: 22, color: "maroon" }}
-                        name="credit-card"
-                        onPress={() => { navigation.navigate('ShoppingList') }}
-                    />
-                </View>
-                <View style={{ width: "88%", }}>
-                    <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
-                        Pagamento na entrega
-          </Text>
-                    <Text style={{ fontSize: 14, color: "#444" }}>
-                        {paymentType}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={styles.line} />
-
-            {/* <View style={styles.resumeContainer}> */}
-            <View>
-
-                <View style={styles.orderIdContainer}>
-                    <View style={{ width: "13%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                        <Feather
-                            style={{ fontSize: 22, color: "maroon" }}
-                            name="shopping-cart"
-                        />
-                    </View>
-                    <View style={[styles.resumeItems, { width: "90%" }]}>
-                        <View>
-                            <Text style={styles.resumeText}>
-                                {quantityOfItems} produto(s)
-                            </Text>
-                        </View>
-                        <View>
-                            <Text style={styles.resumeText}>{subtotal}</Text>
-                        </View>
-                    </View>
-                </View>
-
-                <View style={styles.orderIdContainer}>
-                    <View style={{ width: "13%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                        <Feather
-                            style={{ fontSize: 22, color: "maroon" }}
-                            name="truck"
-                        />
-                    </View>
-                    <View style={[styles.resumeItems, { width: "90%" }]}>
-                        <View>
-                            <Text style={styles.resumeText}>
-                                Frete
-                            </Text>
-                        </View>
-                        <View>
-                            <Text style={styles.resumeText}>{shipping}</Text>
-                        </View>
-                    </View>
-                </View>
-
-                <View style={styles.orderIdContainer}>
-                    <View style={{ width: "13%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                        <Feather
-                            style={{ fontSize: 22, color: "maroon" }}
-                            name="dollar-sign"
-                        />
-                    </View>
-                    <View style={[styles.resumeItems, { width: "90%" }]}>
-                        <View>
-                            <Text style={styles.resumeTextTotal}>Total</Text>
-                        </View>
-                        <View>
-                            <Text style={styles.resumeTextTotal}>{total}</Text>
-                        </View>
-                    </View>
-                </View>
-
-            </View>
-
-            <View style={styles.line} />
-
-            <View style={styles.itemsHeaderContainer}>
-                <View style={[{ flexDirection: "row" }, styles.header1]}>
-                    <Feather
-                        style={{ fontSize: 22, color: "maroon", marginRight: 10 }}
-                        name="list"
-                    />
-                    <Text style={styles.headerText}>Produtos</Text>
-                </View>
-                <View style={styles.header2}>
-                    <Text style={styles.headerText}>Qtde</Text>
-                </View>
-            </View>
-
-            <ScrollView vertical style={styles.itemsDetails}>
-                {addedItems.map((item) => {
-                    return (
-                        <View key={item.description} style={styles.itemsDetailsContainer}>
-                            <View style={styles.det1}>
-                                <Text>{item.description}</Text>
-                            </View>
-                            <View style={styles.det2}>
-                                <Text>{item.quantity}</Text>
-                            </View>
-                        </View>
-                    )
-                })}
-            </ScrollView>
-
-        </KeyboardAvoidingView>
-    );
 };
 
 const styles = StyleSheet.create({
@@ -359,25 +413,30 @@ const styles = StyleSheet.create({
     },
     orderIdContainer: {
         flexDirection: "row",
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
         marginTop: 15,
         marginLeft: 20,
         marginRight: "30%",
     },
-    previsionContainer: {
+    totalContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginHorizontal: 20,
+        marginTop: 15,
+        marginLeft: 15,
+        marginRight: 10,
     },
-    addressContainer: {
+    infoContainer: {
+        backgroundColor: "#e6e6e6",
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: "silver",
+        elevation: 5,
         flexDirection: "row",
         justifyContent: "space-between",
         marginHorizontal: 20,
-    },
-    paymentContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginHorizontal: 20,
+        marginBottom: 15,
     },
     itemsHeaderContainer: {
         marginBottom: 1,
@@ -385,9 +444,6 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginRight: 5,
         flexDirection: "row",
-    },
-    itemsDetails: {
-        // backgroundColor: "white",
     },
     itemsDetailsContainer: {
         flexDirection: "row",
@@ -430,7 +486,6 @@ const styles = StyleSheet.create({
     resumeItems: {
         flexDirection: "row",
         justifyContent: "space-between",
-        // marginTop: 10,
         paddingHorizontal: 10,
     },
 

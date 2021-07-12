@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     KeyboardAvoidingView, StyleSheet,
     View, Text, Image, TouchableOpacity
@@ -6,33 +6,39 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import store from "../../store";
-import { actionAddToCart } from "../../store/actions";
+import * as mapsService from "../../services/mapsService";
+import * as actions from "../../store/actions";
 import noImage from "../../../assets/no-image.png";
 import * as masks from "../../utils/masks";
 import * as def from "../../configs/default";
+import * as utils from "../../utils";
+// import { back } from "react-native/Libraries/Animated/src/Easing";
 
 const SelectedItem = ({ navigation }) => {
 
+    let returnRoute;
+
     const [selectedProduct] = useState(store.getState().cartState.item);
-    const [quantity, setQuantity] = useState(1);
-    const price = masks.moneyMask(selectedProduct.price);
+    const showPrice2 = !!selectedProduct.priceVariation;
 
-    const confirmClick = (selectedProduct) => {
-        const itemToAddToCart = {
-            id: selectedProduct.id,
-            description: selectedProduct.description,
-            quantity,
-            price: selectedProduct.price,
-            image: selectedProduct.image,
-            shippingTax: store.getState().defaultState.shippingTaxSettings,
-        };
-        store.dispatch(actionAddToCart(itemToAddToCart));
+    const [quantity, setQuantity] = useState(!showPrice2 ? 1 : 0);
+    const [quantity2, setQuantity2] = useState(0);
+    
+    const [totalQuantity, setTotalQuantity] = useState(!showPrice2 ? 1 : 0);
+    
+    const [mainPrice] = useState(selectedProduct.price);
+    const [price2] = useState(selectedProduct.priceVariation);
+    
+    let priceVariation = "R$ 0,00";
+    if (!!selectedProduct.priceVariation) priceVariation = masks.moneyMask(selectedProduct.priceVariation);
 
-        if (store.getState().cartState.quantityOfItems === 1) {
-            return navigation.navigate('Address', 'ShoppingList');
-        }
-        navigation.navigate('ShoppingList');
-    };
+    let descriptionVariation = "Sem Promoção";  
+    if (!!selectedProduct.descriptionVariation) descriptionVariation = selectedProduct.descriptionVariation;
+
+
+    useEffect(() => {
+        returnRoute = navigation.state.params;
+    }, []);
 
     return (
         <KeyboardAvoidingView
@@ -43,7 +49,9 @@ const SelectedItem = ({ navigation }) => {
                 <Feather
                     style={{ width: 50, fontSize: 28, color: "#777777" }}
                     name="arrow-left"
-                    onPress={() => { navigation.navigate('ShoppingList') }}
+                    onPress={() => { 
+                        navigation.navigate( !!returnRoute ? returnRoute : 'ShoppingList' );
+                    }}
                 />
             </View>
 
@@ -63,38 +71,139 @@ const SelectedItem = ({ navigation }) => {
                 </Text>
             </View>
 
-            <View style={styles.priceContainer}>
-                <Text style={styles.price}>{price}</Text>
-            </View>
+            { showPrice2 && 
+                <>
+                    <View style={styles.priceContainer}>
+                        <Text style={styles.price}>
+                            {priceVariation}
+                        </Text>
+                        <Text style={{color:"red"}}>
+                            {descriptionVariation}
+                        </Text>
+                    </View>
 
-            <View style={styles.quantityContainer}>
-                <Text
-                    style={styles.btnPlus}
-                    onPress={() => {
-                        if (quantity > 1) setQuantity(quantity - 1);
-                    }}
-                >
-                    -
-                </Text>
-                <Text style={styles.quantity}>{quantity}</Text>
-                <Text
-                    style={styles.btnMinus}
-                    onPress={() => setQuantity(quantity + 1)}
-                >
-                    +
-                </Text>
-            </View>
+                    <View style={styles.quantityContainer}>
+                        <Text style={styles.btnSubtract}
+                            onPress={() => {
+                                if (quantity2 <= 0) return;
+                                
+                                const qtty = quantity2 - 1;
+                                setQuantity2(qtty);
+                                setTotalQuantity( quantity + ( qtty * selectedProduct.quantityVariation ) );
+                            }}
+                        >
+                            -
+                        </Text>
 
-            <TouchableOpacity
-                style={styles.addItemContainer}
-                onPress={() => confirmClick(selectedProduct) }
+                        <Text style={styles.quantity}>
+                            {quantity2}
+                        </Text>
+
+                        <Text style={styles.btnAdd}
+                            onPress={() => {
+                                const qtty = quantity2 + 1;
+                                setQuantity2(qtty);
+                                setTotalQuantity( quantity + ( qtty * selectedProduct.quantityVariation ) );
+                            }}
+                        >
+                            +
+                        </Text>
+                    </View>
+                </>
+            }
+            
+            <>
+                <View style={[styles.priceContainer, { marginTop: 30 }]}>
+                    <Text style={styles.price}>
+                        { masks.moneyMask(mainPrice) }
+                    </Text>
+                    <Text style={{color:"red"}}>
+                        Unidade
+                    </Text>
+                </View>
+
+                <View style={styles.quantityContainer}>
+                    <Text style={styles.btnSubtract}
+                        onPress={() => {
+                            if(quantity <= !showPrice2 ? 1 : 0) return;
+                            
+                            const qtty = quantity - 1;
+                            setQuantity(qtty);
+                            setTotalQuantity( qtty + ( quantity2 * selectedProduct.quantityVariation ) );
+                        }}
+                    >
+                        -
+                    </Text>
+
+                    <Text style={styles.quantity}>
+                        {quantity}
+                    </Text>
+
+                    <Text style={styles.btnAdd}
+                        onPress={() => {
+                            const qtty = quantity + 1;
+                            setQuantity(qtty);
+                            setTotalQuantity( qtty + ( quantity2 * selectedProduct.quantityVariation ) );
+                        }}
+                    >
+                        +
+                    </Text>
+                </View>
+            </>
+
+            <TouchableOpacity style={styles.addItemContainer}
+                onPress={() => btnAddClick(selectedProduct) }
             >
-                <Text style={styles.addItemText}>Adicionar</Text>
+                <Text style={styles.addItemText}>
+                    {`Adicionar(${totalQuantity})`}
+                </Text>
             </TouchableOpacity>
 
         </KeyboardAvoidingView>
-    )
-}
+    );
+    
+    function btnAddClick(selectedProduct) {
+        const previousQuantity = store.getState().cartState.quantityOfItems;
+
+        if (quantity  > 0 ) updateCart( selectedProduct, quantity, mainPrice );
+
+        if (quantity2 > 0 ) updateCart(
+            selectedProduct, 
+            quantity2 * selectedProduct.quantityVariation, 
+            price2,
+            selectedProduct.quantityVariation, 
+            selectedProduct.priceVariation, 
+            selectedProduct.descriptionVariation, 
+        );
+
+        if (previousQuantity === 0) {
+            return navigation.navigate('Address', !!returnRoute ? returnRoute : 'ShoppingList');
+        };
+
+        navigation.navigate( !!returnRoute ? returnRoute : 'ShoppingList' );
+
+        //////////////////////////////////////
+
+        async function updateCart(item, qtty, price, qttyVar = 0, priceVar = 0, descVar = '') {
+            store.dispatch(actions.actionAddToCart(
+                {
+                    id: item.id,
+                    description: item.description,
+                    quantity: qtty,
+                    price: price,
+                    image: item.image,
+                    shippingTax: await utils.getShippingTax(),
+                    productPrice: item.productPrice,
+
+                    priceVariation: priceVar,
+                    quantityVariation: qttyVar,
+                    descriptionVariation: descVar,
+                }
+            ));
+        };
+    };
+    
+};
 
 const styles = StyleSheet.create({
     mainContainer: {
@@ -110,13 +219,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     image: {
-        width: 280,
-        height: 280,
+        width: 200,
+        height: 200,
     },
     descriptionContainer: {
         flexDirection: "row",
         justifyContent: "flex-start",
-        marginTop: 20,
+        marginTop: 10,
         paddingHorizontal: 30,
     },
     description: {
@@ -125,13 +234,12 @@ const styles = StyleSheet.create({
     },
 
     priceContainer: {
-        flexDirection: "row",
         justifyContent: "flex-start",
         marginLeft: 30,
         marginTop: 10,
     },
     price: {
-        fontSize: 26,
+        fontSize: 20,
         fontWeight: "bold",
         color: "#555555",
     },
@@ -139,12 +247,15 @@ const styles = StyleSheet.create({
     quantityContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 30,
-        marginHorizontal: 60,
+        marginTop: 10,
+        marginHorizontal: 15,
         paddingVertical: 1,
         paddingHorizontal: 20,
-        borderRadius: 20,
+        borderRadius: 15,
         backgroundColor: "#efefef",
+
+        borderColor: "silver",
+        borderWidth: 1,
 
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -153,18 +264,18 @@ const styles = StyleSheet.create({
 
         elevation: 5,
     },
-    btnPlus: {
-        fontSize: 36,
+    btnSubtract: {
+        fontSize: 28,
         fontWeight: "bold",
         color: "blue",
         paddingHorizontal: 25,
     },
     quantity: {
-        fontSize: 32,
+        fontSize: 20,
         fontWeight: "bold",
     },
-    btnMinus: {
-        fontSize: 38,
+    btnAdd: {
+        fontSize: 28,
         fontWeight: "bold",
         color: "blue",
         paddingHorizontal: 25,
@@ -172,6 +283,10 @@ const styles = StyleSheet.create({
 
     addItemContainer:
         def.confirmButtonContainer(),
+    
+    addItem2Container:
+        def.confirmButtonContainer(),
+
     addItemText:
         def.confirmButtonText(),
 });

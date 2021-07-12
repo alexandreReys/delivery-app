@@ -151,18 +151,23 @@ export const getCep = async (postalCode) => {
   try {
     address = await api.get(`/delivery-order/postal-code/${postalCode}`);
   } catch (error) {
+    console.error("===============================================");
     console.error("OrderService.getCep: API.get.erro : ", error);
+    console.error("===============================================");
     return null;
   }
 
   return address.data;
 };
 
-export const updateRatingOrder = async (id, rating) => {
+export const updateRatingOrder = async (id, ratingPar) => {
   try {
+    const rating = !ratingPar? 0: ratingPar;
     await api.put(`/delivery-order/rating/${id}/${rating}`);
   } catch (error) {
+    console.error("===============================================");
     console.error("ErrorMessage: updateRatingOrder error:", error);
+    console.error("===============================================");
     return null;
   }
   return;

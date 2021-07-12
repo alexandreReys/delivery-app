@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Image, View, Dimensions, StyleSheet } from 'react-native';
+import { Image, View, Dimensions, StyleSheet, ImageBackgroundBase } from 'react-native';
+import store from "../store";
 
 import Carousel from 'react-native-snap-carousel'; // Version can be specified in package.json
 
@@ -9,27 +10,32 @@ const SLIDER_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.9);
 const ITEM_HEIGHT = Math.round(ITEM_WIDTH * 3 / 4);
 
-const images = [
-    'https://www.anrsistemas.com.br/dv/1.jpg',
-    'https://www.anrsistemas.com.br/dv/2.jpg',
-    'https://www.anrsistemas.com.br/dv/3.jpg',
-];
+const a = 'https://www.anrsistemas.com.br/dv/1.jpg';
+const b = 'https://www.anrsistemas.com.br/dv/2.jpg';
+const c = 'https://www.anrsistemas.com.br/dv/3.jpg';
 
-const DATA = [];
-for (let i = 0; i < 3; i++) {
-    DATA.push(i)
-}
+var images = [];
+var DATA = [];
 
 export default class Carrousel extends Component {
 
-    state = {
-        index: 0
-    }
+    state = { index: 0 }
 
     constructor(props) {
         super(props);
+        
+        images = [];
+        props.imageList.forEach( el => {
+            images.push( el.uri )
+        });
+
+        DATA = [];
+        for (let i = 0; i < images.length; i++) {
+            DATA.push(i)
+        };
+
         this._renderItem = this._renderItem.bind(this)
-    }
+    };
     
     _renderItem({ item }) {
         return (

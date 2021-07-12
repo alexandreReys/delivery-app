@@ -7,7 +7,8 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import store from "../../store";
-import { actionDeliveryAddressSave, actionCartReset } from "../../store/actions";
+// import { actionDeliveryAddressSave, actionCartReset } from "../../store/actions";
+import * as actions from "../../store/actions";
 
 import * as masks from "../../utils/masks";
 import * as utils from "../../utils";
@@ -64,27 +65,35 @@ const Address = ({ navigation }) => {
 
     async function handleSubmit() {
         const addressValues = verifyFields();
+
         if (!addressValues) return false;
-        store.dispatch( actionDeliveryAddressSave(addressValues) );
+
+        store.dispatch( actions.actionDeliveryAddressSave(addressValues) );
         
         const addr = utils.getShortAddress(addressValues);
-        
         const distances = await mapsService.googleDistance( addr );
-        
         const customerDistance = (distances.distance.value / 1000).toFixed(2);
 
         if ( customerDistance > deliveryAreaDistance ) {
-            store.dispatch( actionCartReset() );
+            store.dispatch( actions.actionCartReset() );
 
             utils.showAlert( "Sinto Muito ...", 
-            
 `Infelizmente você se encontra fora de nossa area de entrega !! 
             
 Atendemos uma área de ${deliveryAreaDistance} kms e você se encontra a ${customerDistance} kms`
-
             );
         };
 
+        store.dispatch( actions.actionSetCustomerDistance(customerDistance) );
+        
+        store.dispatch( actions.actionCartRecalculate(
+            {
+                deliveryAreaDistance: store.getState().defaultState.deliveryAreaDistance,
+                shippingTaxSettings: store.getState().defaultState.shippingTaxSettings,
+                deliveryAreaDistance2: store.getState().defaultState.deliveryAreaDistance2,
+                shippingTax2Settings: store.getState().defaultState.shippingTax2Settings,
+            }
+        ));
         navigation.navigate(returnRoute);
     };
 

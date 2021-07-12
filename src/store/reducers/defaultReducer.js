@@ -5,24 +5,32 @@ const INITIAL_STATE = {
   adminModule: false,
 
   addressSellerSettings: "",
-  shippingTaxSettings: 0,
-  
   webBannerSettings: "",
   webBannerPublicIdSettings: "",
   
   appBannerSettings: "",
   appBannerPublicIdSettings: "",
   
+  appBanner2Settings: "",
+  appBanner2PublicIdSettings: "",
+  
+  appBanner3Settings: "",
+  appBanner3PublicIdSettings: "",
+  
   appLogoPSettings: "",
   appLogoPPublicIdSettings: "",
   
-  deliveryAreaDistance: 0,
   urlDeliveryMap: "",
   urlGooglePlay: "",
   
   contactPhone: "",
   contactEmail: "",
   contactWhatsapp: "",
+  
+  deliveryAreaDistance: 0,
+  shippingTaxSettings: 0,
+  deliveryAreaDistance2: 0,
+  shippingTax2Settings: 0,
 };
 
 export default function defaultReducer(state = INITIAL_STATE, action) {
@@ -32,28 +40,42 @@ export default function defaultReducer(state = INITIAL_STATE, action) {
     case "ACTION_ADMIN_MODULE_DEACTIVATE":
       return { ...state, adminModule: false };
     case "ACTION_GET_SETTINGS":
-      return functionGetSettings(state, action);
+      return getSettings(state, action);
     default:
       return state;
-  }
-}
+  };
+};
 
-const functionGetSettings = (state, { settings }) => {
+const getSettings = (state, { settings }) => {
   return {
     ...state,
     addressSellerSettings: settings.AddressSellerSettings,
-    shippingTaxSettings: settings.ShippingTaxSettings,
     webBannerSettings: settings.WebBannerSettings,
     webBannerPublicIdSettings: settings.WebBannerPublicIdSettings,
+
     appBannerSettings: settings.AppBannerSettings,
     appBannerPublicIdSettings: settings.AppBannerPublicIdSettings,
+
+    appBanner2Settings: settings.AppBanner2Settings,
+    appBanner2PublicIdSettings: settings.AppBanner2PublicIdSettings,
+
+    appBanner3Settings: settings.AppBanner3Settings,
+    appBanner3PublicIdSettings: settings.AppBanner3PublicIdSettings,
+
     appLogoPSettings: settings.AppLogoPSettings,
     appLogoPPublicIdSettings: settings.AppLogoPPublicIdSettings,
-    deliveryAreaDistance: settings.DeliveryAreaDistance,
+
     urlDeliveryMap: settings.UrlDeliveryMap,
     urlGooglePlay: settings.UrlGooglePlay,
     contactPhone: settings.ContactPhone,
     contactEmail: settings.ContactEmail,
     contactWhatsapp: settings.ContactWhatsapp,
+
+    deliveryAreaDistance: settings.DeliveryAreaDistance,
+    shippingTaxSettings: settings.ShippingTaxSettings,
+    deliveryAreaDistance2: settings.DeliveryAreaDistance2,
+    shippingTax2Settings: settings.ShippingTax2Settings,
+
+    efectiveShippingTax: settings.ShippingTaxSettings,
   };
 };

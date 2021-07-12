@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
     KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback,
-    View, ScrollView, Text, Image, TouchableOpacity
+    View, ScrollView, Text, Image, TouchableOpacity, Linking
 } from "react-native";
 import { connect } from "react-redux";
 
 import { Feather } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import * as masks from "../../utils/masks";
+import banner from "../../../assets/icon.png";
+
 import * as utils from "../../utils";
 import * as defs from "../../configs/default";
 
@@ -30,6 +31,9 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
     const [loading, setLoading] = useState(true);
     const [searchBox, setSearchBox] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [banner1, setBanner1] = useState("");
+    const [banner2, setBanner2] = useState("");
+    const [banner3, setBanner3] = useState("");
 
     useEffect(() => {
         getProductsAddressAndSettings();
@@ -39,7 +43,12 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
             if (data) setProducts(data);
 
             await orderService.getAddressStorage();
+
             await settingsService.get();
+
+            setBanner1(store.getState().defaultState.appBannerSettings);
+            setBanner2(store.getState().defaultState.appBanner2Settings);
+            setBanner3(store.getState().defaultState.appBanner3Settings);
 
             setLoading(false);
         };
@@ -81,10 +90,10 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                                         style={{
                                             marginVertical: 5,
                                             paddingVertical: 5,
-                                            width: 150,
+                                            width: 100,
                                             textAlign: "center",
                                             color: "navy",
-                                            fontSize: 10,
+                                            fontSize: 9,
                                             borderWidth: 1,
                                             borderColor: "orange",
                                             borderRadius: 5,
@@ -108,6 +117,7 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
             </View>
         );
     };
+
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
 
@@ -116,7 +126,7 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                 <View>
                     <Image
                         style={stylesHeader.logotipo}
-                        source={ utils.getImage(store.getState().defaultState.appLogoPSettings) }
+                        source={utils.getImage(store.getState().defaultState.appLogoPSettings)}
                     />
                 </View>
 
@@ -180,12 +190,12 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                 </View>
             </TouchableWithoutFeedback>
 
-            { !!searchBox && (<SearchBox />)}
+            {!!searchBox && (<SearchBox />)}
 
-            { loading && (<Loader />)}
+            {loading && (<Loader />)}
 
-            { !loading && (
-                <MainContent products={products} navigation={navigation} />
+            {!loading && (
+                <MainContent products={products} navigation={navigation} banner1={banner1} banner2={banner2} banner3={banner3} />
             )}
 
         </KeyboardAvoidingView>
@@ -195,48 +205,23 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-const MainContent = ({ products, navigation }) => {
+const MainContent = ({ products, navigation, banner1, banner2, banner3 }) => {
+    // const imageList = [
+    //     { uri: "https://www.anrsistemas.com.br/dv/1.jpg" },
+    //     { uri: "https://www.anrsistemas.com.br/dv/2.jpg" },
+    //     { uri: "https://www.anrsistemas.com.br/dv/3.jpg" },
+    // ];
+    const imageList = [
+        { uri: banner1 }, { uri: banner2 }, { uri: banner3 },
+    ];
 
-    const AppBanner = () => {
-        let styles = StyleSheet.create({
-            // mainContainer: {
-            //     flexDirection: "row",
-            //     justifyContent: "center"
-            // },
-            // imageContainer: {
-            //     // marginVertical: 10,
-            //     width: "95%",
-            //     height: 200,
-            //     borderRadius: 10,
-            //     backgroundColor: "silver",
-            //     elevation: 5,
-            // },
-            // image: {
-            //     height: "98%",
-            //     width: "99%",
-            //     borderRadius: 5,
-            //     resizeMode: "stretch",
-            // },
-        });
-        return (
-            // <View style={ styles.mainContainer }>
-                // <View style={styles.imageContainer}> 
-                    // <Image
-                    //     source={{ uri: store.getState().defaultState.appBannerSettings }}
-                    //     style={ styles.image }/> */}
-                // </View>
-            // </View>
+    // console.log("shoppingList.imageList:", imageList);
 
-            <View>
-                <Carrousel />
-            </View>
-        );
-    };
-    
-    ///////////////////////////
     return (
         <ScrollView vertical showsVerticalScrollIndicator={false} >
-            <AppBanner />
+            {!!banner1 && !!banner2 && !!banner3 && (
+                <Carrousel imageList={imageList} />
+            )}
 
             {products.map((it) => (
                 <View vertical key={it.category} style={styles.categoryTitle}>
@@ -279,20 +264,17 @@ const ProductRow = ({ categoryProducts, navigation }) => {
             color: "#1523c8"
         },
     });
-    
+
     return (
-        <ScrollView
+        <ScrollView style={styles.productRow}
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.productRow}
         >
             {categoryProducts.map((product) => (
                 <Product key={product.IdVinho} product={product} navigation={navigation} />
             ))}
 
-            <View
-                style={seeAllStyles.seeAllContainer}
-            >
+            <View style={seeAllStyles.seeAllContainer}>
                 <TouchableOpacity
                     style={seeAllStyles.seeAllButton}
                     onPress={() => {
@@ -308,33 +290,10 @@ const ProductRow = ({ categoryProducts, navigation }) => {
 };
 
 const Product = ({ product, navigation }) => {
+
     product = utils.adjustPromotionalPrice(product);
 
-    var precoVinho, precoAnterVinho;
-
-    if (product.EmPromocaoVinho && product.PrecoVinho >= 100) { 
-        precoVinho = masks.numberMask(product.PrecoVinho) 
-    } else {
-        precoVinho = masks.moneyMask(product.PrecoVinho)
-    };
-
-    if (product.EmPromocaoVinho && product.PrecoPromocionalVinho >= 100) {
-        precoAnterVinho = masks.moneyMaskSpaceless(product.PrecoAnterVinho)
-    } else {
-        precoAnterVinho = masks.moneyMask(product.PrecoAnterVinho)
-    };
-
-    productClick = (product) => {
-        const param = {
-            id: product.IdVinho,
-            description: product.DescricaoVinho,
-            quantity: 1,
-            price: product.PrecoVinho,
-            image: product.Imagem1Vinho,
-        };
-        store.dispatch(actionSelectProduct(param));
-        navigation.navigate('SelectedItem');
-    };
+    const { precoVinho, precoAnterVinho } = utils.getPrice(product);
 
     return (
         <TouchableWithoutFeedback
@@ -342,7 +301,8 @@ const Product = ({ product, navigation }) => {
             onPress={() => productClick(product)}
         >
             <View style={styles.productBox}>
-                <View style={styles.imageContainer}>
+
+                <View style={[styles.imageContainer]}>
                     <Image
                         style={styles.image}
                         source={utils.getImage(product.Imagem1Vinho)}
@@ -350,28 +310,84 @@ const Product = ({ product, navigation }) => {
                     />
                 </View>
 
-                <View style={styles.descriptionContainer}>
+                <View style={[styles.descriptionContainer,
+                { marginBottom: product.QuantityProductVariation > 0 ? 5 : 30 }
+                ]}>
                     <Text style={styles.description}>
                         {utils.filterDesc25(product.DescricaoVinho)}
                     </Text>
                 </View>
 
-                <View style={styles.priceContainer}>
-                    <View style={[{ flexDirection: "row" }]}>
-                        <Text style={!product.EmPromocaoVinho ? styles.price : styles.priceLine}>
-                            {precoAnterVinho}
-                        </Text>
+                <PromotionalText product={product} />
 
-                        {!!product.EmPromocaoVinho && (
-                            <Text style={styles.price}>
-                                {precoVinho}
-                            </Text>
-                        )}
-                    </View>
-                </View>
+                <PriceContainer product={product} precoAnterVinho={precoAnterVinho} precoVinho={precoVinho} />
+
             </View>
         </TouchableWithoutFeedback>
     );
+
+    function PromotionalText({ product }) {
+        if (product.QuantityProductVariation > 0) {
+            return (
+                <View style={{ marginBottom: 25 }}>
+                    <Text style={{ fontSize: 10, color: "red" }}>
+                        {product.DescriptionProductVariation}
+                    </Text>
+                </View>
+            );
+        };
+
+        return null;
+    };
+
+    function PriceContainer({ product, precoAnterVinho, precoVinho }) {
+        return (
+            <View style={styles.priceContainer}>
+                <View style={[{ flexDirection: "row" }]}>
+
+                    <DiscardedPrice price={precoAnterVinho} emPromocao={product.EmPromocaoVinho} />
+
+                    <EffectivePrice price={precoVinho} />
+
+                </View>
+            </View>
+        );
+
+        function DiscardedPrice({ price, emPromocao }) {
+            if (!emPromocao) return null;
+
+            return (
+                <Text style={styles.priceLine}>
+                    {price}
+                </Text>
+            );
+        };
+
+        function EffectivePrice({ price }) {
+            return (
+                <Text style={styles.price}>
+                    {price}
+                </Text>
+            );
+        };
+    };
+
+    function productClick(product) {
+        const param = {
+            id: product.IdVinho,
+            description: product.DescricaoVinho,
+            quantity: 1,
+            price: product.PrecoVinho,
+            image: product.Imagem1Vinho,
+
+            productPrice: product.PrecoVinho,
+            priceVariation: product.PriceProductVariation ? product.PriceProductVariation : 0,
+            quantityVariation: product.QuantityProductVariation ? product.QuantityProductVariation : 0,
+            descriptionVariation: product.DescriptionProductVariation,
+        };
+        store.dispatch(actionSelectProduct(param)); // => cart.item
+        navigation.navigate('SelectedItem');
+    };
 };
 
 
@@ -474,9 +490,6 @@ const styles = StyleSheet.create({
 
     descriptionContainer: {
         marginTop: 5,
-        marginBottom: 30,
-        paddingLeft: 2,
-
     },
     description: {
         fontSize: 14,
