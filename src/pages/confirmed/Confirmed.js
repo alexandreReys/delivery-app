@@ -27,6 +27,7 @@ const Confirmed = ({ navigation }) => {
     const [addedItems] = useState(store.getState().cartState.addedItems);
     const [quantityOfItems] = useState(store.getState().cartState.quantityOfItems);
     const [paymentType] = useState(store.getState().cartState.paymentType);
+    const [customerName] = useState(store.getState().addressState.name);
 
     const [position, setPosition] = useState(0);
     const [rating, setRating] = useState("");
@@ -61,14 +62,7 @@ const Confirmed = ({ navigation }) => {
     var myTimer;
 
     useEffect(() => {
-        myTimer = setInterval(() => {
-            if (position > 500) {
-                console.log('timer finish')
-                clearInterval(myTimer);
-            } else {
-                checkDeliveryStatus();
-            };
-        }, 15000);
+        myTimer = setInterval( () => { checkDeliveryStatus() }, 5000 );
 
         BackHandler.addEventListener('hardwareBackPress', () => true);
         setPrevision(utils.orderPrevision(dateOrder, timeOrder));
@@ -76,8 +70,27 @@ const Confirmed = ({ navigation }) => {
             clearInterval(myTimer);
             store.dispatch(actionCartReset());
         };
-    }, [position])
-
+    }, [])
+    
+    function checkDeliveryStatus() {
+        async function getOrderStatus() {
+            const order = await orderService.getOrder(insertId);
+            if (order.StatusOrder === "Pendente" && position !== 1) {
+                return setPosition(1);   // Separando Produtos
+            };
+            if (order.StatusOrder === "Saiu para entregar" && position !== 2) {
+                return setPosition(2);   // Entregador saiu
+            };
+            if (order.StatusOrder === "A caminho" && position !== 3) {
+                return setPosition(3);   // Chegando ...
+            };
+            if (order.StatusOrder === "Entregue" && position !== 4) {
+                return setPosition(4);   // Entregue
+            };
+        };
+        getOrderStatus();
+    };
+    
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
             <View style={styles.header}>
@@ -191,11 +204,7 @@ const Confirmed = ({ navigation }) => {
                     {/* Endereço */}
                     <View style={styles.infoContainer}>
                         <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                            <Feather
-                                style={{ fontSize: 22, color: "#731cac" }}
-                                name="map-pin"
-                                onPress={() => { navigation.navigate('ShoppingList') }}
-                            />
+                            <Feather name="map-pin"style={{ fontSize: 22, color: "#731cac" }} />
                         </View>
                         <View style={{ width: "88%", }}>
                             <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
@@ -214,11 +223,7 @@ const Confirmed = ({ navigation }) => {
                     {/* Tipo Pagamento */}
                     <View style={styles.infoContainer}>
                         <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
-                            <Feather
-                                style={{ fontSize: 22, color: "#731cac" }}
-                                name="credit-card"
-                                onPress={() => { navigation.navigate('ShoppingList') }}
-                            />
+                            <Feather name="credit-card" style={{ fontSize: 22, color: "#731cac" }} />
                         </View>
                         <View style={{ width: "88%", }}>
                             <Text style={{ fontSize: 14, color: "navy", fontWeight: "bold" }}>
@@ -347,38 +352,17 @@ const Confirmed = ({ navigation }) => {
     function whatsappPress() {
         let whatsappNumber = 
             '+55' + store.getState().defaultState.contactWhatsapp.replace(/\D/g, '');
-        
         let url =
-            'whatsapp://send?text=' + 'testando' + '&phone=' + whatsappNumber;
-            
+            `whatsapp://send?text=Olá, meu nome é ${customerName} e gostaria de falar sobre o pedido ${insertId}&phone= ${whatsappNumber}`;
         Linking.openURL(url)
             .then((data) => {
-                // console.log('WhatsApp Opened');
+                // 'WhatsApp Opened'
             })
             .catch(() => {
                 alert('Não foi possivel acessar seu whatsapp');
             });
     };
     
-    function checkDeliveryStatus() {
-        async function getOrderStatus() {
-            const order = await orderService.getOrder(insertId);
-            if (order.StatusOrder === "Pendente" && position !== 1) {
-                setPosition(1);   // Separando Produtos
-            };
-            if (order.StatusOrder === "Saiu para entregar" && position !== 2) {
-                setPosition(2);   // Entregador saiu
-            };
-            if (order.StatusOrder === "A caminho" && position !== 3) {
-                setPosition(3);   // Chegando ...
-            };
-            if (order.StatusOrder === "Entregue" && position !== 4) {
-                setPosition(4);   // Entregue
-            };
-        };
-        getOrderStatus();
-    };
-
     function ratingCompleted(rating) {
         setRating(rating);
     };

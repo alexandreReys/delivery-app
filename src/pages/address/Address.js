@@ -25,7 +25,6 @@ const Address = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [deliveryAreaDistance, setDeliveryAreaDistance] = useState(0);
 
-
     const [name, setName] = useState(store.getState().addressState.name);
     const [document, setDocument] = useState(store.getState().addressState.document);
     const [phoneNumber, setPhoneNumber] = useState(store.getState().addressState.phoneNumber);

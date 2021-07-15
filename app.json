@@ -6,7 +6,7 @@
       "ios",
       "android"
     ],
-    "version": "1.2.14",
+    "version": "1.2.17",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -23,12 +23,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anralexandre.deliveryanr",
-      "buildNumber": "1.2.14"
+      "buildNumber": "1.2.17"
     },
     "android": {
       "package": "com.anralexandre.deliveryanr",
       "permissions": [],
-      "versionCode": 14,
+      "versionCode": 17,
       "useNextNotificationsApi": true
     }
   }

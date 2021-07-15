@@ -217,6 +217,9 @@ function TestarFuncaoCPF() {
 export const getShippingTax = async () => {
     const settings = store.getState().defaultState;
     const deliveryInfo = store.getState().addressState;
+
+    if (!deliveryInfo.street) return settings.shippingTaxSettings;
+
     let customerDistance = store.getState().cartState.customerDistance;
 
     if (!customerDistance) {

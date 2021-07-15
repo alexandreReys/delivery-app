@@ -3,22 +3,16 @@ import {
     StyleSheet, KeyboardAvoidingView, View,
     Text, TouchableOpacity, ScrollView, Image,
 } from "react-native";
+
 import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 
 import CartItens from '../../components/CartItens';
 import store from "../../store";
-import * as actions from "../../store/actions";
 import * as masks from "../../utils/masks";
-import * as utils from "../../utils";
 import * as def from "../../configs/default";
 
 const ShoppingCart = ({ navigation, quantityOfItems }) => {
-    
-    if (!quantityOfItems) {
-        return navigation.navigate('ShoppingList');
-    };
-    
     const [addr, setAddr] = useState( store.getState().addressState );
 
     const subtotal = masks.moneyMask(store.getState().cartState.subtotal);
@@ -28,6 +22,10 @@ const ShoppingCart = ({ navigation, quantityOfItems }) => {
     useEffect(() => {
         setAddr( store.getState().addressState );
     }, []);
+
+    useEffect(() => {
+        if (!quantityOfItems) navigation.navigate('ShoppingList');
+    });
 
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
@@ -61,54 +59,53 @@ const ShoppingCart = ({ navigation, quantityOfItems }) => {
                 <View style={styles.addressContainer}>
                     <View style={{ width: "12%", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
                         <Feather
-                            style={{ fontSize: 22, color: "#731cac" }}
+                            style={{ fontSize: 22, color: "black" }}
                             name="map-pin"
-                            onPress={() => { navigation.navigate('ShoppingList') }}
                         />
                     </View>
                     <View style={{ width: "78%", }}>
                         <Text style={{ fontSize: 16, color: "navy", fontWeight: "bold" }}>
                             Receber agora em
                         </Text>
-                        <Text style={{ fontSize: 16, color: "#777" }}>
+                        <Text style={{ fontSize: 14, color: "#777" }}>
                             {`${addr.street}, ${addr.number}`}
                         </Text>
-                        <Text style={{ fontSize: 16, color: "#777" }}>
+                        <Text style={{ fontSize: 14, color: "#777" }}>
                             {`${addr.neighborhood}, ${addr.city}, ${addr.state}`}
                         </Text>
                     </View>
                     <View style={{ width: "10%", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
                         <Feather
-                            style={{ fontSize: 22, color: "#721cac" }}
+                            style={{ fontSize: 22, color: "blue" }}
                             name="edit"
-                            onPress={() => { navigation.navigate('Address', 'ShoppingList') }}
+                            onPress={() => { navigation.navigate('Address', 'ShoppingCart') }}
                         />
                     </View>
                 </View>
 
-                <View style={styles.resumeContainer}>
+                <View>
 
 
-                    <View style={styles.resumeItems}>
-                        <View>
-                            <Text style={styles.resumeText}>{quantityOfItems} produto(s)</Text>
+                    <View style={styles.resumeContainer}>
+                        <View style={styles.resumeItems}>
+                            <View>
+                                <Text style={styles.resumeText}>{quantityOfItems} produto(s)</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.resumeText}>{subtotal}</Text>
+                            </View>
                         </View>
-                        <View>
-                            <Text style={styles.resumeText}>{subtotal}</Text>
-                        </View>
-                    </View>
 
-                    <View style={styles.resumeShipping}>
-                        <View>
-                            <Text style={styles.resumeText}>Frete</Text>
+                        <View style={styles.resumeShipping}>
+                            <View>
+                                <Text style={styles.resumeText}>Frete</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.resumeText}>{shipping}</Text>
+                            </View>
                         </View>
-                        <View>
-                            <Text style={styles.resumeText}>{shipping}</Text>
-                        </View>
-                    </View>
 
-
-                    <View style={styles.resumeTotal}>
+                        <View style={styles.resumeTotal}>
                         <View>
                             <Text style={styles.resumeTextTotal}>Total</Text>
                         </View>
@@ -116,7 +113,7 @@ const ShoppingCart = ({ navigation, quantityOfItems }) => {
                             <Text style={styles.resumeTextTotal}>{total}</Text>
                         </View>
                     </View>
-
+                    </View>
 
                     <TouchableOpacity
                         style={styles.continueContainer}
@@ -188,7 +185,13 @@ const styles = StyleSheet.create({
     addressContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-        padding: 20,
+        paddingVertical: 20,
+        paddingHorizontal: 10,
+        margin: 20,
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderColor: "navy",
+        borderRadius: 10,
     },
     itemsHeaderContainer: {
         marginTop: 20,
@@ -198,6 +201,11 @@ const styles = StyleSheet.create({
     },
     resumeContainer: {
         marginHorizontal: 20,
+        backgroundColor: "white",
+        paddingBottom: 10,
+        borderWidth: 1,
+        borderColor: "navy",
+        borderRadius: 10,
     },
     resumeItems: {
         flexDirection: "row",
