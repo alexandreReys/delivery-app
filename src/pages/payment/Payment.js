@@ -7,6 +7,7 @@ import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { TextInputMask } from "react-native-masked-text";
 import { moneyInputConfig } from "../../configs/textInputMaskConfig";
+import CurrencyInput from "react-native-currency-input";
 
 import store from "../../store";
 import { actionSelectPaymentType, actionSetCustomerInfo } from "../../store/actions";
@@ -28,7 +29,7 @@ const Payment = ({ navigation }) => {
     const [shoppingCartTotal] = useState(store.getState().cartState.total);
     const [showChange, setShowChange] = useState(true);
 
-    const [changeInput, setChangeInput] = useState("0");
+    const [changeInput, setChangeInput] = useState("");
 
     var changeRef = useRef(null);
 
@@ -60,7 +61,7 @@ const Payment = ({ navigation }) => {
 
         store.dispatch(actionSetCustomerInfo(customerInfo));
 
-        let changeFor = changeRef.getRawValue();
+        let changeFor = Number(changeInput);
 
         if (paymentOption) {
             if (paymentOption === "Dinheiro") {
@@ -197,7 +198,7 @@ const Payment = ({ navigation }) => {
             </View>
 
             {/* change container */}
-            <View
+            {/* <View
                 style={[
                     styles.changeContainer,
                     { display: showChange ? "flex" : "none" }
@@ -213,6 +214,34 @@ const Payment = ({ navigation }) => {
                     style={styles.changeInput}
                     options={moneyInputConfig}
                     onChangeText={text => setChangeInput(text)}
+                />
+
+            </View> */}
+
+            {/* change container */}
+            <View
+                style={[
+                    styles.changeContainer,
+                    { display: showChange ? "flex" : "none" }
+                ]}
+            >
+                <Text style={styles.changeLabel}>
+                    Troco para R$
+                </Text>
+                
+                <CurrencyInput
+                    style={styles.changeInput}
+                    value={changeInput}
+                    minValue={0}
+                    keyboardType="numeric"
+                    maxLength={8}
+                    onChangeValue={setChangeInput}
+                    prefix=""
+                    delimiter=""
+                    separator=","
+                    precision={2}
+                    onChangeText={ formattedValue => null }
+                        
                 />
 
             </View>
@@ -292,17 +321,16 @@ const styles = StyleSheet.create({
         color: "black"
     },
     changeInput: {
-        marginLeft: 10,
-        height: 30,
+        backgroundColor: "white",
+        marginLeft: 10, 
         width: 200,
         borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        backgroundColor: "white",
-        elevation: 3,
-        fontSize: 16,
-        color: "black",
-        borderColor: "#999",
+        borderColor: "black",
+        borderRadius: 7,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        fontSize: 18,
+        elevation: 8,
     },
     precautionText: {
         marginTop: 20,

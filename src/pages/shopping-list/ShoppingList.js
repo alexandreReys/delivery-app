@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-    KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback,
-    View, ScrollView, Text, Image, TouchableOpacity, Linking
+    KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, Alert,
+    View, ScrollView, Text, Image, TouchableOpacity, Linking, BackHandler
 } from "react-native";
 import { connect } from "react-redux";
 
@@ -36,6 +36,8 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
     const [banner3, setBanner3] = useState("");
 
     useEffect(() => {
+        BackHandler.addEventListener('hardwareBackPress', () => true);
+
         getProductsAddressAndSettings();
 
         async function getProductsAddressAndSettings() {
@@ -53,6 +55,22 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
             setLoading(false);
         };
 
+        // const backAction = () => {
+        //     console.log('backAction', navigation.state.routeName);
+        //     if (navigation.state.routeName == 'ShoppingList') {
+        //         Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+        //         {
+        //             text: 'Cancel',
+        //             onPress: () => null,
+        //             style: 'cancel',
+        //         },
+        //         { text: 'YES', onPress: () => BackHandler.exitApp() },
+        //         ]);
+        //         return true;
+        //     };
+        // };
+        // BackHandler.addEventListener('hardwareBackPress', backAction);
+        // return () => BackHandler.removeEventListener('hardwareBackPress');
     }, []);
 
 
@@ -132,7 +150,9 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
 
                 <TouchableOpacity
                     style={stylesHeader.addressContainer}
-                    onPress={() => { navigation.navigate('Address', 'ShoppingList') }}
+                    onPress={() => { 
+                        navigation.navigate('Address', 'ShoppingList') 
+                    }}
                 >
                     <View style={{ flexDirection: "row" }}>
                         <Text style={stylesHeader.address1Text}>

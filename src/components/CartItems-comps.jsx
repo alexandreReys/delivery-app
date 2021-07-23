@@ -4,6 +4,7 @@ import store from '../store';
 import * as actions from '../store/actions';
 import * as utils from '../utils';
 import * as masks from '../utils/masks';
+// import Loader from "../components/Loader";
 
 export const ProductImage = React.memo( ({ image }) => {
     return (
@@ -38,18 +39,25 @@ export const Description = React.memo( ({ description }) => {
 
 export const Item = React.memo( ({ item }) => {
     const [quantity, setQuantity] = React.useState(item.quantity);
-                
+    const [loading, setLoading] = React.useState(false);
+            
     async function btnRemoveClick() {
         store.dispatch( actions.actionRemoveFromCart( item ) );
     };
 
     async function btnAddClick() {
+        // setLoading(true);
+        // setTimeout(() => setLoading(false), 900);
+    
         const qttyAdd = (item.quantityVariation === 0 ? 1 : item.quantityVariation);
         setQuantity( quantity + qttyAdd );
         store.dispatch( actions.actionAddToCart( await getItem(qttyAdd) ) );
     };
 
     async function btnSubtClick() {
+        // setLoading(true);
+        // setTimeout(() => setLoading(false), 900);
+    
         const qttySub = (item.quantityVariation === 0 ? 1 : item.quantityVariation);
         if ( quantity > qttySub ) {
             setQuantity( quantity - qttySub );
@@ -102,6 +110,7 @@ export const Item = React.memo( ({ item }) => {
         <>
             {!!quantity && (
                 <View style={styles.itemsDetailsContainer}>
+                    {/* {loading && (<Loader />)} */}
 
                     <View style={{ width: '30%', alignItems: 'center' }}>
                         <ProductImage image={item.image} />

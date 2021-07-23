@@ -12,23 +12,52 @@ import store from "../../store";
 import * as masks from "../../utils/masks";
 import * as def from "../../configs/default";
 
-const ShoppingCart = ({ navigation, quantityOfItems }) => {
-    const [addr, setAddr] = useState( store.getState().addressState );
+const ShoppingCart = ({ navigation, quantityOfItems, subtotal }) => {
+    const [addr, setAddr] = useState(store.getState().addressState);
+    const [amountLeft, setAmountLeft] = useState(0);
+    const [widthSize, setWidthSize] = useState(0);
 
-    const subtotal = masks.moneyMask(store.getState().cartState.subtotal);
-    const shipping = masks.moneyMask(store.getState().cartState.shipping);
-    const total = masks.moneyMask(store.getState().cartState.total);
+    const maskedSubtotal = masks.moneyMask(subtotal);
+    const maskedShippingValue = masks.moneyMask(store.getState().cartState.shipping);
+    const maskedTotal = masks.moneyMask(store.getState().cartState.total);
+
+    const minimumOrderValue = 10;
 
     useEffect(() => {
-        setAddr( store.getState().addressState );
+        setAddr(store.getState().addressState);
     }, []);
 
     useEffect(() => {
         if (!quantityOfItems) navigation.navigate('ShoppingList');
     });
 
+    useEffect(() => {
+        const calcSize = (partial, total) => {
+            const percent = 100 - ( Number.parseInt( partial * 100 ) / total );
+            return setWidthSize(percent);
+        };
+
+        let x = minimumOrderValue - subtotal;
+        setAmountLeft(x);
+        calcSize(x, minimumOrderValue);
+
+    }, [subtotal]);
+
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
+
+            {amountLeft > 0 && (
+                <>
+                    <View style={{ backgroundColor: "silver" }}>
+                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: "black", paddingVertical: 5, textAlign: "center" }}>
+                            Faltam {masks.moneyMask(amountLeft)} para o valor minimo do pedido
+                        </Text>
+                    </View>
+                    <View style={[styles.viewTransparent, { width: `${widthSize}%` }]}>
+                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: "black", paddingVertical: 5 }}></Text>
+                    </View>
+                </>
+            )}
 
             <View style={styles.header}>
                 <Feather
@@ -42,14 +71,14 @@ const ShoppingCart = ({ navigation, quantityOfItems }) => {
                 <Text style={{ width: 50 }}></Text>
             </View>
 
-            <TouchableOpacity style={styles.finalizeContainer}
+            <TouchableOpacity style={[styles.finalizeContainer, {backgroundColor: amountLeft <= 0 ? '#deeffe' : 'silver'}]}
                 onPress={() => {
-                    navigation.navigate('Payment');
+                    if (amountLeft <= 0) navigation.navigate('Payment');
                 }}
             >
-                <Text style={{color: "maroon", fontWeight: 'bold'}}>
+                <Text style={{ fontWeight: 'bold', color: amountLeft <= 0 ? "maroon" : 'white'}}>
                     Finalizar Compra
-                </Text>                
+                </Text>
             </TouchableOpacity>
 
             <ScrollView>
@@ -92,7 +121,7 @@ const ShoppingCart = ({ navigation, quantityOfItems }) => {
                                 <Text style={styles.resumeText}>{quantityOfItems} produto(s)</Text>
                             </View>
                             <View>
-                                <Text style={styles.resumeText}>{subtotal}</Text>
+                                <Text style={styles.resumeText}>{maskedSubtotal}</Text>
                             </View>
                         </View>
 
@@ -101,30 +130,42 @@ const ShoppingCart = ({ navigation, quantityOfItems }) => {
                                 <Text style={styles.resumeText}>Frete</Text>
                             </View>
                             <View>
-                                <Text style={styles.resumeText}>{shipping}</Text>
+                                <Text style={styles.resumeText}>{maskedShippingValue}</Text>
                             </View>
                         </View>
 
                         <View style={styles.resumeTotal}>
-                        <View>
-                            <Text style={styles.resumeTextTotal}>Total</Text>
+                            <View>
+                                <Text style={styles.resumeTextTotal}>Total</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.resumeTextTotal}>{maskedTotal}</Text>
+                            </View>
                         </View>
-                        <View>
-                            <Text style={styles.resumeTextTotal}>{total}</Text>
-                        </View>
-                    </View>
                     </View>
 
-                    <TouchableOpacity
-                        style={styles.continueContainer}
-                        onPress={() => {
-                            navigation.navigate('Payment');
-                        }}
-                    >
-                        <Text style={styles.continue}>
-                            Finalizar Compra
-                        </Text>
-                    </TouchableOpacity>
+                    {amountLeft <= 0 && (
+                        <TouchableOpacity
+                            style={styles.continueContainer}
+                            onPress={() => {
+                                navigation.navigate('Payment');
+                            }}
+                        >
+                            <Text style={styles.continue}>
+                                Finalizar Compra
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {amountLeft > 0 && (
+                        <View
+                            style={[styles.continueContainer, { backgroundColor: "silver" }]}
+                        >
+                            <Text style={styles.continue}>
+                                Finalizar Compra
+                            </Text>
+                        </View>
+                    )}
 
                     <TouchableOpacity
                         style={styles.keepBuyingContainer}
@@ -144,10 +185,15 @@ const ShoppingCart = ({ navigation, quantityOfItems }) => {
 
         </KeyboardAvoidingView>
     );
-
 };
 
 const styles = StyleSheet.create({
+    viewTransparent: {
+        backgroundColor: "green", 
+        position: "absolute", 
+        top: 0, 
+        opacity : 0.5,
+    },
     mainContainer: {
         flex: 1,
         backgroundColor: "#fff",
@@ -167,7 +213,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginHorizontal: 20,
         paddingVertical: 10,
-        
+
         backgroundColor: '#deeffe',
         borderStyle: 'solid',
         borderColor: "gray",
@@ -176,7 +222,7 @@ const styles = StyleSheet.create({
 
         flexDirection: "row",
         justifyContent: "center",
-        
+
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.27,
@@ -290,4 +336,5 @@ const styles = StyleSheet.create({
 
 export default connect((state) => ({
     quantityOfItems: state.cartState.quantityOfItems,
+    subtotal: state.cartState.subtotal,
 }))(ShoppingCart);

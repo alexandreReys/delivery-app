@@ -15,6 +15,7 @@ import store from "./src/store";
 import Routes from "./src/routes";
 
 import * as pushNotificationService from "./src/services/pushNotificationService";
+import { AppearanceProvider } from 'react-native-appearance';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -55,8 +56,10 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <StatusBar barStyle="light-content" backGroundColor="black" translucent={false} />
-      <Routes />
+      <AppearanceProvider>
+        <StatusBar barStyle="light-content" backGroundColor="black" translucent={false} />
+        <Routes />
+        </AppearanceProvider>
     </Provider>
   );
 }

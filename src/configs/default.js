@@ -55,3 +55,7 @@ export const productBox = () => ({
     elevation: 4,
 });
 
+export function fwidthSize2(x) {
+    console.log(x);
+    return "50%";
+};

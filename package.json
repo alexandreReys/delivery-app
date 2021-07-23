@@ -23,6 +23,8 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz",
     "react-native-animated-loader": "^0.0.8",
+    "react-native-appearance": "~0.3.3",
+    "react-native-currency-input": "^1.0.1",
     "react-native-dotenv": "^2.3.0",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-maps": "0.27.1",

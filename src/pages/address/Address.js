@@ -20,8 +20,6 @@ import Loader from "../../components/Loader";
 
 const Address = ({ navigation }) => {
 
-    const [returnRoute] = useState(navigation.state.params);
-
     const [loading, setLoading] = useState(false);
     const [deliveryAreaDistance, setDeliveryAreaDistance] = useState(0);
 
@@ -93,7 +91,7 @@ Atendemos uma área de ${deliveryAreaDistance} kms e você se encontra a ${custo
                 shippingTax2Settings: store.getState().defaultState.shippingTax2Settings,
             }
         ));
-        navigation.navigate(returnRoute);
+        navigation.navigate(navigation.state.params);
     };
 
     function verifyFields() {
