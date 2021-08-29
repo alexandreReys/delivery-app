@@ -41,12 +41,12 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
         getProductsAddressAndSettings();
 
         async function getProductsAddressAndSettings() {
+            await settingsService.get();
+
             const data = await productService.getProductsGroupedByCategory();
             if (data) setProducts(data);
 
             await orderService.getAddressStorage();
-
-            await settingsService.get();
 
             setBanner1(store.getState().defaultState.appBannerSettings);
             setBanner2(store.getState().defaultState.appBanner2Settings);
@@ -105,24 +105,11 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                                 return (
                                     <Text
                                         key={category.IdCategory}
-                                        style={{
-                                            marginVertical: 5,
-                                            paddingVertical: 5,
-                                            width: 100,
-                                            textAlign: "center",
-                                            color: "navy",
-                                            fontSize: 9,
-                                            borderWidth: 1,
-                                            borderColor: "orange",
-                                            borderRadius: 5,
-                                            backgroundColor: "#fffde7",
-                                            elevation: 5,
-                                        }}
+                                        style={styles.seeAll}
                                         onPress={() => {
                                             setSearchBox(false)
                                             navigation.navigate("SeeAll", { category: category.DescriptionCategory })
-                                        }
-                                        }
+                                        }}
                                     >
                                         {category.DescriptionCategory}
                                     </Text>
@@ -136,22 +123,35 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
         );
     };
 
+    const logo = () => {
+        if (!!store.getState().addressState.document)
+            
+            if (!store.getState().defaultState.operationIsEnabledSettings) {
+                operationsIsDisabledMessage();
+            } else {
+                navigation.navigate('CustomerOrders');
+            };
+    };
+
     return (
         <KeyboardAvoidingView style={styles.mainContainer}>
 
             {/* logo, address, cart */}
             <View style={stylesHeader.headerContainer}>
-                <View>
-                    <Image
-                        style={stylesHeader.logotipo}
-                        source={utils.getImage(store.getState().defaultState.appLogoPSettings)}
-                    />
-                </View>
+                <TouchableOpacity
+                    onPress={logo}
+                >
+                    <Feather name="menu" style={{ color: 'grey', fontSize: 40 }}></Feather>
+                </TouchableOpacity>
 
                 <TouchableOpacity
                     style={stylesHeader.addressContainer}
-                    onPress={() => { 
-                        navigation.navigate('Address', 'ShoppingList') 
+                    onPress={() => {
+                        if (!store.getState().defaultState.operationIsEnabledSettings) {
+                            operationsIsDisabledMessage();
+                        } else {
+                            navigation.navigate('Address', 'ShoppingList') 
+                        };
                     }}
                 >
                     <View style={{ flexDirection: "row" }}>
@@ -194,7 +194,13 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                         <Text style={[stylesHeader.searchText, { paddingHorizontal: 15 }]}></Text>
                         <Text
                             style={stylesHeader.searchText}
-                            onPress={() => { navigation.navigate("Search") }}
+                            onPress={() => { 
+                                if (!store.getState().defaultState.operationIsEnabledSettings) {
+                                    operationsIsDisabledMessage();
+                                } else {
+                                    navigation.navigate("Search") 
+                                };
+                            }}
                         >
                             Pesquise sua bebida favorita
                         </Text>
@@ -204,7 +210,13 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
                                 fontWeight: "bold", paddingHorizontal: 15,
                             }}
                             name="chevron-down"
-                            onPress={() => { setSearchBox(!searchBox) }}
+                            onPress={() => { 
+                                if (!store.getState().defaultState.operationIsEnabledSettings) {
+                                    operationsIsDisabledMessage();
+                                } else {
+                                    setSearchBox(!searchBox) 
+                                };
+                            }}
                         />
                     </View>
                 </View>
@@ -226,17 +238,9 @@ const ShoppingList = ({ navigation, addressState, quantityOfItems }) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 const MainContent = ({ products, navigation, banner1, banner2, banner3 }) => {
-    // const imageList = [
-    //     { uri: "https://www.anrsistemas.com.br/dv/1.jpg" },
-    //     { uri: "https://www.anrsistemas.com.br/dv/2.jpg" },
-    //     { uri: "https://www.anrsistemas.com.br/dv/3.jpg" },
-    // ];
     const imageList = [
         { uri: banner1 }, { uri: banner2 }, { uri: banner3 },
     ];
-
-    // console.log("shoppingList.imageList:", imageList);
-
     return (
         <ScrollView vertical showsVerticalScrollIndicator={false} >
             {!!banner1 && !!banner2 && !!banner3 && (
@@ -298,7 +302,11 @@ const ProductRow = ({ categoryProducts, navigation }) => {
                 <TouchableOpacity
                     style={seeAllStyles.seeAllButton}
                     onPress={() => {
-                        navigation.navigate("SeeAll", { category: categoryProducts[0].TipoVinho })
+                        if (!store.getState().defaultState.operationIsEnabledSettings) {
+                            operationsIsDisabledMessage();
+                        } else {
+                            navigation.navigate("SeeAll", { category: categoryProducts[0].TipoVinho })
+                        };
                     }}
                 >
                     <Feather name="arrow-right" style={seeAllStyles.seeAllIcon}></Feather>
@@ -318,7 +326,13 @@ const Product = ({ product, navigation }) => {
     return (
         <TouchableWithoutFeedback
             key={product.IdVinho}
-            onPress={() => productClick(product)}
+            onPress={() => {
+                if (!store.getState().defaultState.operationIsEnabledSettings) {
+                    operationsIsDisabledMessage();
+                } else {
+                    productClick(product)
+                };
+            }}
         >
             <View style={styles.productBox}>
 
@@ -410,6 +424,14 @@ const Product = ({ product, navigation }) => {
     };
 };
 
+function operationsIsDisabledMessage() {
+
+    alert( `Ops !!
+
+Desculpe mas não estamos atendendo no momento !!`
+    );
+
+};
 
 
 const stylesHeader = StyleSheet.create({
@@ -438,7 +460,7 @@ const stylesHeader = StyleSheet.create({
     },
     address2Text: {
         color: "white",
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "bold",
     },
 
@@ -481,6 +503,20 @@ const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
         backgroundColor: "#fff",
+    },
+
+    seeAll: {
+        marginVertical: 5,
+        paddingVertical: 5,
+        width: 100,
+        textAlign: "center",
+        color: "navy",
+        fontSize: 9,
+        borderWidth: 1,
+        borderColor: "orange",
+        borderRadius: 5,
+        backgroundColor: "#fffde7",
+        elevation: 5,
     },
 
     categoryTitle: {

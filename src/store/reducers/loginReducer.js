@@ -1,5 +1,6 @@
 const INITIAL_STATE = {
   loggedUser: "",
+  token: "",
 };
 
 export default function authReducer(state = INITIAL_STATE, action) {
@@ -7,15 +8,17 @@ export default function authReducer(state = INITIAL_STATE, action) {
     case "ACTION_LOGIN":
       return handleLogin(state, action);
     case "ACTION_LOGOUT":
-      return { ...state, loggedUser: "" };
+      return { ...state, loggedUser: "", token: "" };
     default:
       return state;
   }
 }
 
-const handleLogin = (state, { user }) => {
+const handleLogin = (state, { authData }) => {
   return {
     ...state,
-    loggedUser: user,
+    loggedUser: authData.userName,
+    token: authData.token,
+    // token: authData.user,
   };
 };

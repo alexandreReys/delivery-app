@@ -8,8 +8,8 @@ export function actionGetSettings(settings) {
   return { type: "ACTION_GET_SETTINGS", settings };
 };
 
-export function actionLogin(user) {
-  return { type: "ACTION_LOGIN", user };
+export function actionLogin(authData) {
+  return { type: "ACTION_LOGIN", authData };
 };
 export function actionLogout() {
   return { type: "ACTION_LOGOUT" };
@@ -72,8 +72,8 @@ export function actionSetCustomerDistance(customerDistance) {
   return { type: "ACTION_SET_CUSTOMER_DISTANCE", customerDistance };
 };
 
-export function actionGetDeliveryAddress(address) {
-  return { type: "ACTION_GET_DELIVERY_ADDRESS", address };
+export function actionSetDeliveryAddress(address) {
+  return { type: "ACTION_SET_DELIVERY_ADDRESS", address };
 };
 export function actionDeliveryAddressSave(address) {
   return { type: "ACTION_DELIVERY_ADDRESS_SAVE", address };

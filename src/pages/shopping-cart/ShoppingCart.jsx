@@ -7,6 +7,7 @@ import {
 import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 
+import Header from '../../components/Header';
 import CartItens from '../../components/CartItens';
 import store from "../../store";
 import * as masks from "../../utils/masks";
@@ -59,17 +60,7 @@ const ShoppingCart = ({ navigation, quantityOfItems, subtotal }) => {
                 </>
             )}
 
-            <View style={styles.header}>
-                <Feather
-                    style={styles.arrowLeftIcon}
-                    name="arrow-left"
-                    onPress={() => { navigation.navigate('ShoppingList') }}
-                />
-                <Text style={{ fontSize: 22, fontWeight: 'bold', color: "silver" }}>
-                    Sacola
-                </Text>
-                <Text style={{ width: 50 }}></Text>
-            </View>
+            <Header title={'SACOLA'} exitRoute={'ShoppingList'} navigation={navigation} />
 
             <TouchableOpacity style={[styles.finalizeContainer, {backgroundColor: amountLeft <= 0 ? '#deeffe' : 'silver'}]}
                 onPress={() => {
@@ -236,7 +227,7 @@ const styles = StyleSheet.create({
         margin: 20,
         backgroundColor: "white",
         borderWidth: 1,
-        borderColor: "navy",
+        borderColor: "silver",
         borderRadius: 10,
     },
     itemsHeaderContainer: {
@@ -250,7 +241,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         paddingBottom: 10,
         borderWidth: 1,
-        borderColor: "navy",
+        borderColor: "silver",
         borderRadius: 10,
     },
     resumeItems: {

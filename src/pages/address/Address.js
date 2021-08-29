@@ -7,7 +7,6 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import store from "../../store";
-// import { actionDeliveryAddressSave, actionCartReset } from "../../store/actions";
 import * as actions from "../../store/actions";
 
 import * as masks from "../../utils/masks";
@@ -23,9 +22,9 @@ const Address = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [deliveryAreaDistance, setDeliveryAreaDistance] = useState(0);
 
-    const [name, setName] = useState(store.getState().addressState.name);
-    const [document, setDocument] = useState(store.getState().addressState.document);
-    const [phoneNumber, setPhoneNumber] = useState(store.getState().addressState.phoneNumber);
+    // const [name, setName] = useState(store.getState().addressState.name);
+    // const [document, setDocument] = useState(store.getState().addressState.document);
+    // const [phoneNumber, setPhoneNumber] = useState(store.getState().addressState.phoneNumber);
     const [postalCode, setPostalCode] = useState(store.getState().addressState.postalCode);
     const [street, setStreet] = useState(store.getState().addressState.street);
     const [number, setNumber] = useState(store.getState().addressState.number);
@@ -98,8 +97,18 @@ Atendemos uma área de ${deliveryAreaDistance} kms e você se encontra a ${custo
         if (!buttonEnabled) return null;
         if (!city) return null;
         const addressValues = {
-            name, document, phoneNumber, addressType: " ", postalCode, 
-            street, number, complement, info, neighborhood, city, state,
+            // name, 
+            // document, 
+            // phoneNumber, 
+            addressType: " ", 
+            postalCode, 
+            street, 
+            number, 
+            complement, 
+            info, 
+            neighborhood, 
+            city, 
+            state,
         };
         if (!validateFields(addressValues)) return null;
 

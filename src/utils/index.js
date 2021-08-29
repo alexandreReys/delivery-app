@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 import { requestPermissionsAsync, getCurrentPositionAsync } from "expo-location";
-import * as orderService from "../services/orderService";
+// import * as orderService from "../services/orderService";
 import * as mapsService from "../services/mapsService";
 
 import store from "../store";
@@ -8,6 +8,64 @@ import * as masks from "./masks";
 
 import * as actions from "../store/actions";
 import noImage from "../../assets/no-image.png";
+
+export const testaCPF = (pStrCPF) => {
+    var Soma;
+    var Resto;
+    
+    let strCPF = pStrCPF.replace(/[^0-9]/g,'');
+
+    Soma = 0;
+    if (strCPF == "00000000000") return false;
+
+    for (i = 1; i <= 9; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+    Resto = (Soma * 10) % 11;
+
+    if ((Resto == 10) || (Resto == 11)) Resto = 0;
+    if (Resto != parseInt(strCPF.substring(9, 10))) return false;
+
+    Soma = 0;
+    for (i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+    Resto = (Soma * 10) % 11;
+
+    if ((Resto == 10) || (Resto == 11)) Resto = 0;
+    if (Resto != parseInt(strCPF.substring(10, 11))) return false;
+
+    return true;
+}
+
+function TestarFuncaoCPF() {
+    // /^(([0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2})|([0-9]{11}))$/
+    var strCPF = "12345678909";
+    alert(TestaCPF(strCPF));
+
+//     function(){
+// 		var campo = $('input').val(); // Pega valor do campo
+//     nomeSobrenome = /\b[A-Za-zÀ-ú][A-Za-zÀ-ú]+,?\s[A-Za-zÀ-ú][A-Za-zÀ-ú]{2,19}\b/gi;
+//     // Regex para duas strings, separadas com espaço e com no mínimo 3 caracteres. Aceita acentuação e rejeita números.
+    
+//     // Faz a validacao do regex no campo indicado
+//     if(!(nomeSobrenome.test(campo))){
+// 			alert('Inválido');      
+// 		}else{
+// 			alert('Válido');
+// 		}
+// }
+};
+
+
+// dd/mm/yyyy
+export const formattedDate = (date) => {
+    const d = date.toString().substring(0, 10);
+    return d.substr(8, 2) + "/" + d.substr(5, 2) + "/" + d.substr(0, 4);
+};
+
+// dd/mm/yyyy 00:00
+export const formattedDateTime = (date, time) => {
+    const d = date.toString().substring(0, 10);
+    const t = time.toString().substring(0, 5);
+    return d.substr(8, 2) + "/" + d.substr(5, 2) + "/" + d.substr(0, 4) + " " + t;
+};
 
 export const adjustPromotionalPrice = (list) => {
     list = { ...list, PrecoAnterVinho: list.PrecoVinho };
@@ -64,27 +122,6 @@ export const showAlert = (title, message) => {
 
 export const fieldInvalidMessage = message => {
     Alert.alert("Campo Invalido", message)
-};
-
-export const checkAndSend = async (navigation) => {
-    var orders = [];
-
-    orders = await orderService.getDeliveryManOrders("A caminho");
-    if (orders.length > 0) {
-        store.dispatch(actions.actionSetOrder(orders[0]));
-        navigation.navigate("OrderOnTheWay");
-        return;
-    };
-
-    orders = await orderService.getDeliveryManOrders("Saiu para entregar");
-    if (orders.length > 0) {
-        store.dispatch(actions.actionSetOrders(orders));
-        navigation.navigate("OrderToDeliver");
-        return;
-    };
-
-    store.dispatch(actions.actionSetOrders([]));
-    navigation.navigate("OrderSelect");
 };
 
 export const orderPrevision = (date, time) => {
@@ -173,46 +210,6 @@ export const getShortAddress = (addr) => {
 
     return address;
 };
-
-export const TestaCPF = (strCPF) => {
-    var Soma;
-    var Resto;
-    Soma = 0;
-    if (strCPF == "00000000000") return false;
-
-    for (i = 1; i <= 9; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
-    Resto = (Soma * 10) % 11;
-
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(strCPF.substring(9, 10))) return false;
-
-    Soma = 0;
-    for (i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
-    Resto = (Soma * 10) % 11;
-
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(strCPF.substring(10, 11))) return false;
-    return true;
-}
-
-function TestarFuncaoCPF() {
-    // /^(([0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2})|([0-9]{11}))$/
-    var strCPF = "12345678909";
-    alert(TestaCPF(strCPF));
-
-//     function(){
-// 		var campo = $('input').val(); // Pega valor do campo
-//     nomeSobrenome = /\b[A-Za-zÀ-ú][A-Za-zÀ-ú]+,?\s[A-Za-zÀ-ú][A-Za-zÀ-ú]{2,19}\b/gi;
-//     // Regex para duas strings, separadas com espaço e com no mínimo 3 caracteres. Aceita acentuação e rejeita números.
-    
-//     // Faz a validacao do regex no campo indicado
-//     if(!(nomeSobrenome.test(campo))){
-// 			alert('Inválido');      
-// 		}else{
-// 			alert('Válido');
-// 		}
-// }
-;}
 
 export const getShippingTax = async () => {
     const settings = store.getState().defaultState;

@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "deliveryanr",
+    "name": "ANR Delivery",
     "slug": "deliveryanr",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.2.18",
+    "version": "1.5.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -23,12 +23,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anralexandre.deliveryanr",
-      "buildNumber": "1.2.18"
+      "buildNumber": "1.5.1"
     },
     "android": {
       "package": "com.anralexandre.deliveryanr",
       "permissions": [],
-      "versionCode": 18,
+      "versionCode": 22,
       "useNextNotificationsApi": true
     }
   }

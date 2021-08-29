@@ -1,31 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     KeyboardAvoidingView, StyleSheet, Alert,
-    View, Text, Image, TouchableOpacity, TextInput
+    View, Text, TouchableOpacity
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { TextInputMask } from "react-native-masked-text";
-import { moneyInputConfig } from "../../configs/textInputMaskConfig";
+import Header from '../../components/Header';
 import CurrencyInput from "react-native-currency-input";
-
 import store from "../../store";
-import { actionSelectPaymentType, actionSetCustomerInfo } from "../../store/actions";
-import * as utils from "../../utils";
+import { actionSelectPaymentType } from "../../store/actions";
 import * as masks from "../../utils/masks";
 import * as defs from "../../configs/default";
-import * as orderService from "../../services/orderService";
-import Loader from "../../components/Loader";
-import Header from "../../components/Header";
-// import { TestaCPF } from '../../utils'
 
 const Payment = ({ navigation }) => {
     // const [loading, setLoading] = useState(false);
-
-    const [name, setName] = useState(store.getState().addressState.name);
-    const [document, setDocument] = useState(store.getState().addressState.document);
-    const [phoneNumber, setPhoneNumber] = useState(store.getState().addressState.phoneNumber);
-
     const [paymentOption, setPaymentOption] = useState(null);
     const [continueEnabled, setContinueEnabled] = useState(false);
     const [shoppingCartTotal] = useState(store.getState().cartState.total);
@@ -35,34 +23,16 @@ const Payment = ({ navigation }) => {
 
     var changeRef = useRef(null);
 
-    useEffect(() => { setShowChange(false) }, []);
+    useEffect(() => { 
+        setShowChange(false) 
+    }, []);
 
-    const cardButtonColor = () => (
-        {
-            backgroundColor: paymentOption === "Debito/Credito"
-                ? defs.orangeBackColor
-                : "white",
-        }
-    );
-    const moneyButtonColor = () => (
-        {
-            backgroundColor: paymentOption === "Dinheiro"
-                ? defs.orangeBackColor
-                : "white",
-        }
-    );
-
-    const cardText = () => ({ 
-        fontSize: paymentOption === "Debito/Credito" ? 20 : 16,
-        fontWeight: paymentOption === "Debito/Credito" ? 'bold' : 'normal',
-        color: paymentOption === "Debito/Credito" ? defs.labelColor : 'black',
+    const cardButtonColor = () => ({ 
+        backgroundColor: paymentOption === "Debito/Credito" ? "#F9E79F" : "white",
     });
-    const moneyText = () => ({ 
-        fontSize: paymentOption === "Dinheiro" ? 20 : 16,
-        fontWeight: paymentOption === "Dinheiro" ? 'bold' : 'normal',
-        color: paymentOption === "Dinheiro" ? defs.labelColor : 'black',
+    const moneyButtonColor = () => ({
+        backgroundColor: paymentOption === "Dinheiro" ? "#F9E79F" : "white",
     });
-
     const confirmButtonColor = () => ({
         backgroundColor: continueEnabled === true
             ? defs.confirmButtonColor()
@@ -73,16 +43,6 @@ const Payment = ({ navigation }) => {
 
     const handleOrderConfirmation = async () => {
         if (!paymentOption) return;
-
-        const customerInfo = {
-            id: 0,
-            name,
-            phoneNumber,
-            document
-        };
-        if (!validateFields(customerInfo)) return;
-
-        store.dispatch(actionSetCustomerInfo(customerInfo));
 
         let changeFor = Number(changeInput);
 
@@ -111,10 +71,7 @@ const Payment = ({ navigation }) => {
                 changeValue: changeValue,
             };
 
-            // setLoading(true);
             await store.dispatch(actionSelectPaymentType(paymentTypeData));
-            // const orderInformation = await orderService.postOrder();
-            // setLoading(false);
 
             navigation.navigate('Comments');
 
@@ -126,89 +83,46 @@ const Payment = ({ navigation }) => {
         <KeyboardAvoidingView style={styles.mainContainer}>
             {/* { loading && (<Loader />)} */}
 
-            <Header title={'PAGAMENTO'} exitRoute={'ShoppingCart'} navigation={navigation} />
-
-            {/* Nome */}
-            <View style={{ flexDirection: "row", marginHorizontal: 20, paddingTop: 10 }}>
-                {/* Nome */}
-                <View style={[{ flexDirection: "column", width: "100%", marginRight: "10%" }]}>
-                    <Text style={[styles.textInputLabel]}>
-                        Nome
-                    </Text>
-                    <TextInput
-                        style={[styles.textInput]}
-                        autoFocus={true}
-                        maxLength={100}
-                        onChangeText={text => setName(text)}
-                        defaultValue={name}
-                    />
-                </View>
-            </View>
-
-            {/* Telefone e CPF */}
-            <View style={{ flexDirection: "row", marginTop: 15, marginHorizontal: "5%" }}>
-                {/* Telefone */}
-                <View style={[{ flexDirection: "column", width: "47%", marginRight: "3%" }]}>
-                    <Text style={[styles.textInputLabel]}>
-                        Telefone
-                    </Text>
-                    <TextInput
-                        style={[styles.textInput]}
-                        keyboardType="numeric"
-                        maxLength={15}
-                        onChangeText={text => setPhoneNumber(masks.phoneMask(text))}
-                        defaultValue={phoneNumber}
-                    />
-                </View>
-
-                {/* CPF */}
-                <View style={{ flexDirection: "column", width: "50%" }}>
-                    <Text style={styles.textInputLabel}>
-                        CPF
-                    </Text>
-                    <TextInput
-                        style={[styles.textInput]}
-                        keyboardType="numeric"
-                        maxLength={14}
-                        onChangeText={text => setDocument(masks.cpfMask(text))}
-                        defaultValue={document}
-                    />
-                </View>
-            </View>
-
+            <Header title='FORMA DE PAGAMENTO' exitRoute='ShoppingCart' navigation={navigation}/>
+            
             {/* Card and Money Button */}
-            <Text style={[styles.textInputLabel, { marginHorizontal: "5%", marginTop: 10, textAlign: "center" }]}>
-                Pagar com :
+            <Text style={[styles.textInputLabel, {marginHorizontal: "5%", marginTop: 20}]}>
+                PAGAMENTO NA ENTREGA
             </Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "5%", marginTop: 10 }}>
+
+            <Text style={[styles.textInputLabel, {marginHorizontal: "5%", marginTop: 20}]}>
+                Valor : {total}, pagar com :
+            </Text>
+
+            <View style={{ flexDirection: "column", justifyContent: "space-between", marginHorizontal: "5%", marginTop: 10 }}>
                 {/* Payment Card Button */}
-                <TouchableOpacity
-                    style={[styles.paymentButton, cardButtonColor()]}
-                    onPress={() => {
-                        setShowChange(false);
-                        setPaymentOption("Debito/Credito")
-                        setContinueEnabled(true)
-                    }}>
-                    <MaterialIcons style={{ fontSize: 30, color: defs.labelColor }} name="credit-card" />
-                    <Text style={[styles.paymentText, cardText()]} >
-                        Cartão
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={ [styles.paymentButton, cardButtonColor()] }
+                        onPress={() => {
+                            setShowChange(false);
+                            setPaymentOption("Debito/Credito")
+                            setContinueEnabled(true)
+                        }}>
+                        <MaterialIcons style={{ fontSize: 30, color: "#777777" }} name="credit-card" />
+                        <Text style={{ marginLeft: 15, fontSize: 16, color: "#333333" }} >
+                            Cartão
+                        </Text>
+                    </TouchableOpacity>
                 {/* </View> */}
 
                 {/* Money Button */}
-                <TouchableOpacity
-                    style={[styles.paymentButton, moneyButtonColor()]}
-                    onPress={() => {
-                        setShowChange(true);
-                        setPaymentOption("Dinheiro")
-                        setContinueEnabled(true)
-                    }}>
-                    <Feather style={{ fontSize: 24, color: defs.labelColor }} name="dollar-sign" />
-                    <Text style={[styles.paymentText, moneyText()]} >
-                        Dinheiro
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={ [styles.paymentButton, moneyButtonColor()] }
+                        onPress={() => {
+                            setShowChange(true);
+                            setPaymentOption("Dinheiro")
+                            setContinueEnabled(true)
+                        }}>
+                        <Feather style={{ fontSize: 24, color: "#777777" }} name="dollar-sign" />
+                        <Text style={{ marginLeft: 15, fontSize: 16, color: "#333333" }} >
+                            Dinheiro
+                        </Text>
+                    </TouchableOpacity>
                 {/* </View> */}
             </View>
 
@@ -243,7 +157,7 @@ const Payment = ({ navigation }) => {
                 <Text style={styles.changeLabel}>
                     Troco para R$
                 </Text>
-
+                
                 <CurrencyInput
                     style={styles.changeInput}
                     value={changeInput}
@@ -255,15 +169,15 @@ const Payment = ({ navigation }) => {
                     delimiter=""
                     separator=","
                     precision={2}
-                    onChangeText={formattedValue => null}
-
+                    onChangeText={ formattedValue => null }
+                        
                 />
 
             </View>
 
             {/* Order Confirmation */}
             <TouchableOpacity
-                style={[styles.continueButton, { marginTop: 30 }, confirmButtonColor()]}
+                style={ [styles.continueButton, { marginTop: 30 }, confirmButtonColor()] }
                 onPress={handleOrderConfirmation}
             >
                 <Text style={{ fontSize: 22, color: defs.confirmButtonTextColor() }}>
@@ -290,31 +204,9 @@ const Payment = ({ navigation }) => {
     );
 };
 
-const validateFields = (customerInfo) => {
-    if (!customerInfo.name) {
-        utils.fieldInvalidMessage("Campo Nome é obrigatório !!");
-        return false;
-    }
-    if (!customerInfo.phoneNumber) {
-        utils.fieldInvalidMessage("Campo Telefone é obrigatório !!");
-        return false;
-    }
-    if (!customerInfo.document) {
-        utils.fieldInvalidMessage("Campo CPF é obrigatório !!");
-        return false;
-    }
-    if ( !utils.testaCPF(customerInfo.document) ) {
-        utils.fieldInvalidMessage('Digite um numero de CPF valido !!');
-        return false;
-    }
-
-    return true;
-};
-
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: defs.backgroundColor,
     },
     header: {
         flexDirection: "row",
@@ -335,7 +227,6 @@ const styles = StyleSheet.create({
     changeContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginTop: 20,
         marginHorizontal: 20,
         paddingVertical: 10,
     },
@@ -346,7 +237,7 @@ const styles = StyleSheet.create({
     },
     changeInput: {
         backgroundColor: "white",
-        marginLeft: 10,
+        marginLeft: 10, 
         width: 200,
         borderWidth: 1,
         borderColor: "black",
@@ -364,17 +255,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        width: "48%",
-        height: 60,
-        borderRadius: 15,
-        borderWidth: 1,
-        borderColor: "orange",
+        width: "100%",
+        height: 50,
+        borderRadius: 7,
+        borderColor: "silver",
         elevation: 7,
-    },
-    paymentText: {
-        marginLeft: 15, 
-        fontSize: 16, 
-        color: "#333333",
+        marginBottom: 20,
     },
     continue_Button: {
         flexDirection: "row",
@@ -404,7 +290,7 @@ const styles = StyleSheet.create({
         display: "none",
     },
     textInputLabel: {
-        color: defs.labelColor,
+        color: '#283593',
         fontWeight: "bold",
     },
     textInput: {
@@ -412,8 +298,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingLeft: 10,
         backgroundColor: "white",
-        borderColor: 'silver',
-        borderWidth: 1,
+        elevation: 5,
     },
 
 });

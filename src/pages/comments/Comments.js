@@ -6,6 +6,7 @@ import { actionSetComments } from "../../store/actions";
 import * as defs from "../../configs/default";
 import * as orderService from "../../services/orderService";
 import Loader from "../../components/Loader";
+import Header from "../../components/Header";
 
 const Comments = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
@@ -14,7 +15,7 @@ const Comments = ({ navigation }) => {
     const handleOrderConfirmation = async () => {
         setLoading(true);
         store.dispatch(actionSetComments(comments));
-        const orderInformation = await orderService.postOrder();
+        const orderInformation = await orderService.post();
         setLoading(false);
 
         navigation.navigate('Confirmed', orderInformation);
@@ -25,15 +26,7 @@ const Comments = ({ navigation }) => {
         <KeyboardAvoidingView style={styles.mainContainer}>
             { loading && (<Loader />)}
 
-            <View style={styles.header}>
-                <Feather
-                    style={styles.headerIcon}
-                    name="arrow-left"
-                    onPress={() => { navigation.navigate('Payment') }}
-                />
-                <Text style={styles.headerText}>Observações</Text>
-                <Text style={{ width: 50 }}></Text>
-            </View>
+            <Header title={'OBSERVAÇÕES'} exitRoute={'Payment'} navigation={navigation} />
 
             {/* Comentários */}
             <View style={{ flexDirection: "row", marginHorizontal: 20, paddingTop: 10 }}>
@@ -65,7 +58,7 @@ const Comments = ({ navigation }) => {
 
             {/* Precaution Text */}
             <View style={styles.warningContainer}>
-                <Text style={{fontSize: 12, fontWeight: "bold", marginBottom: 10, color: "navy"}}>
+                <Text style={{fontWeight: "bold", marginBottom: 10, color: defs.labelColor}}>
                     Utilize este campo para :
                 </Text>
                 <Text style={[styles.warningText], {fontWeight: "bold"}}>
@@ -92,6 +85,7 @@ const Comments = ({ navigation }) => {
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
+        backgroundColor: defs.backgroundColor,
     },
     header: {
         flexDirection: "row",
@@ -110,7 +104,7 @@ const styles = StyleSheet.create({
         alignSelf: "center"
     },
     textInputLabel: {
-        color: "black",
+        color: defs.labelColor,
         fontWeight: "bold",
     },
     textInput: {

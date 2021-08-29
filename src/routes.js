@@ -4,16 +4,18 @@ import { createStackNavigator } from "react-navigation-stack";
 import ShoppingList from "./pages/shopping-list/ShoppingList";
 import SelectedItem from "./pages/selected-item/SelectedItem";
 import ShoppingCart from "./pages/shopping-cart/ShoppingCart";
+import Login from "./pages/login/Login";
+import NewAccount from "./pages/new-account/NewAccount";
 import Payment from "./pages/payment/Payment";
 import Confirmed from "./pages/confirmed/Confirmed";
 import Address from "./pages/address/Address";
-import Customer from "./pages/customer/Customer";
+import CustomerOrders from "./pages/customer-orders/CustomerOrders";
+import CustomerOrder from "./pages/customer-order/CustomerOrder";
 import SeeAll from "./pages/see-all/SeeAll";
 import Search from "./pages/search/Search";
 import Main from "./pages/main/Main";
 import Comments from "./pages/comments/Comments";
 import Carrousel from "./components/carrousel";
-
 
 const Routes = createAppContainer(
   createStackNavigator(
@@ -34,6 +36,14 @@ const Routes = createAppContainer(
         screen: Payment,
         navigationOptions: { headerShown: false },
       },
+      Login: {
+        screen: Login,
+        navigationOptions: { headerShown: false },
+      },
+      NewAccount: {
+        screen: NewAccount,
+        navigationOptions: { headerShown: false },
+      },
       Confirmed: {
         screen: Confirmed,
         navigationOptions: { headerShown: false },
@@ -42,8 +52,12 @@ const Routes = createAppContainer(
         screen: Address,
         navigationOptions: { headerShown: false },
       },
-      Customer: {
-        screen: Customer,
+      CustomerOrders: {
+        screen: CustomerOrders,
+        navigationOptions: { headerShown: false },
+      },
+      CustomerOrder: {
+        screen: CustomerOrder,
         navigationOptions: { headerShown: false },
       },
       SeeAll: {

@@ -1,11 +1,16 @@
-// export const confirmButtonColor = () => "#ffcc00";
-export const confirmButtonColor = () => "#501390";//"#3949ab";
-// export const confirmButtonTextColor = () => "navy";
+export const confirmButtonColor = () => "#3559a4";  // "#501390";
 export const confirmButtonTextColor = () => "white";
 export const confirmButtonBorderWidth = () => 1;
 export const confirmButtonBorderRadius = () => 20;
 export const confirmButtonBorderColor = () => "white";
 export const confirmButtonElevation = () => 5;
+export const backgroundColor = '#f2f9f9';  // '#f2f9f9'  '#E3F2FD'
+// export const backgroundColor = process.env.NODE_ENV == "development" ? '#D6EAF8' : '#f2f9f9';  // '#f2f9f9'  '#E3F2FD'
+export const labelColor = '#1A5276';
+export const titleColor = '#455A64';
+export const infoColor = '#616A6B';
+export const orangeBackColor = '#FCF3CF';
+export const orangeFrontColor = '#D35400';
 
 export const confirmButtonContainer = () => ({
     flexDirection: "row",
