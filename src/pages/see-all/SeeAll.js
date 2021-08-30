@@ -1,23 +1,21 @@
+import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-    KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback,
-    View, ScrollView, Text, Image, TouchableOpacity
+    Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableWithoutFeedback,
+    View
 } from "react-native";
-
-import { Feather } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-
 import noImage from "../../../assets/no-image.png";
-import * as masks from "../../utils/masks";
-import * as utils from "../../utils";
 import * as defs from "../../configs/default";
-
 import * as productService from "../../services/productService";
 import store from "../../store";
 import { actionSelectProduct } from "../../store/actions";
+import * as utils from "../../utils";
 
 
-const SeeAll = ({ navigation }) => {
+
+
+
+const SeeAll = ({ route, navigation }) => {
     
     const [products, setProducts] = useState([]);
 
@@ -27,11 +25,11 @@ const SeeAll = ({ navigation }) => {
 
         async function getProductsByCategory() {
             let data;
-            if (navigation.state.params.category === "PROMOÇÃO") {
+            if (route.params.category === "PROMOÇÃO") {
                 let products = await productService.getActiveProductsInPromotion();
                 data = products.map((product) => utils.adjustPromotionalPrice(product));
             } else {
-                let products = await productService.getActiveProductsByCategory(navigation.state.params.category);
+                let products = await productService.getActiveProductsByCategory(route.params.category);
                 data = products.map((product) => utils.adjustPromotionalPrice(product));
             };
 
@@ -50,7 +48,7 @@ const SeeAll = ({ navigation }) => {
                     name="arrow-left"
                     onPress={() => { navigation.navigate('ShoppingList') }}
                 />
-                <Text style={headerStyles.headerText}>{navigation.state.params.category}</Text>
+                <Text style={headerStyles.headerText}>{route.params.category}</Text>
                 <Text style={{ width: 50 }}></Text>
             </View>
 

@@ -1,27 +1,22 @@
+import { Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from 'react';
-import {
-    KeyboardAvoidingView, BackHandler,
-    StyleSheet, View, Text, ScrollView, Linking
-} from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
+import { BackHandler, KeyboardAvoidingView, Linking, ScrollView, StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { AirbnbRating } from 'react-native-ratings';
 import StepIndicator from 'react-native-step-indicator';
-import { Rating, AirbnbRating } from 'react-native-ratings';
-
-import * as masks from "../../utils/masks";
-import * as utils from "../../utils";
 import * as defs from "../../configs/default";
-
+import * as orderService from "../../services/orderService";
 import store from "../../store";
 import { actionCartReset } from "../../store/actions";
-import * as orderService from "../../services/orderService";
-import Header from "../../components/Header";
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import * as utils from "../../utils";
+import * as masks from "../../utils/masks";
 
-const Confirmed = ({ navigation }) => {
-    const [insertId] = useState(navigation.state.params.insertId);
-    const [dateOrder] = useState(navigation.state.params.dateOrder);
-    const [timeOrder] = useState(navigation.state.params.timeOrder);
+
+
+const Confirmed = ({ route, navigation }) => {
+    const [insertId] = useState(route.params.insertId);
+    const [dateOrder] = useState(route.params.dateOrder);
+    const [timeOrder] = useState(route.params.timeOrder);
     const [prevision, setPrevision] = useState(null);
 
     const [subtotal] = useState(masks.moneyMask(store.getState().cartState.subtotal));

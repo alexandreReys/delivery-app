@@ -1,20 +1,16 @@
-import React, { useEffect, useState } from "react";
-import {
-    KeyboardAvoidingView, StyleSheet,
-    View, Text, Image, TouchableOpacity
-} from "react-native";
 import { Feather } from "@expo/vector-icons";
-
-import store from "../../store";
-import * as mapsService from "../../services/mapsService";
-import * as actions from "../../store/actions";
+import React, { useEffect, useState } from "react";
+import { Image, KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import noImage from "../../../assets/no-image.png";
-import * as masks from "../../utils/masks";
 import * as def from "../../configs/default";
+import store from "../../store";
+import * as actions from "../../store/actions";
 import * as utils from "../../utils";
+import * as masks from "../../utils/masks";
+
 // import { back } from "react-native/Libraries/Animated/src/Easing";
 
-const SelectedItem = ({ navigation }) => {
+const SelectedItem = ({ route, navigation }) => {
 
     let returnRoute;
 
@@ -37,7 +33,7 @@ const SelectedItem = ({ navigation }) => {
 
 
     useEffect(() => {
-        returnRoute = navigation.state.params;
+        returnRoute = route.params;
     }, []);
 
     return (
@@ -176,7 +172,7 @@ const SelectedItem = ({ navigation }) => {
 
     function btnAddClick(selectedProduct, returnRoute) {
 
-        if (!returnRoute) returnRoute = navigation.state.params;
+        if (!returnRoute) returnRoute = route.params;
 
         if (!quantity && !quantity2) return null;
 

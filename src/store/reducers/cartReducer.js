@@ -64,13 +64,19 @@ const actionCartReset = (state) => {
 };
 
 const actionCartRecalculate = (state, { shippingTaxInfo }) => {
-    
+
     if (!shippingTaxInfo.deliveryAreaDistance2) return state;
     if (!state.customerDistance) return state;
 
-    const shippingTax = state.customerDistance <= shippingTaxInfo.deliveryAreaDistance2
-        ? shippingTaxInfo.shippingTax2Settings
-        : shippingTaxInfo.shippingTaxSettings;
+    let shippingTax = shippingTaxInfo.shippingTaxSettings;
+    
+    if (state.customerDistance <= shippingTaxInfo.deliveryAreaDistance3) {
+        shippingTax = shippingTaxInfo.shippingTax3Settings
+    } else {
+        if (state.customerDistance <= shippingTaxInfo.deliveryAreaDistance2) {
+            shippingTax = shippingTaxInfo.shippingTax2Settings
+        };
+    };
     
     return {
         ...state,
@@ -78,6 +84,22 @@ const actionCartRecalculate = (state, { shippingTaxInfo }) => {
         total: (state.subtotal + shippingTax),
     };
 };
+
+// const actionCartRecalculate = (state, { shippingTaxInfo }) => {
+    
+//     if (!shippingTaxInfo.deliveryAreaDistance2) return state;
+//     if (!state.customerDistance) return state;
+
+//     const shippingTax = state.customerDistance <= shippingTaxInfo.deliveryAreaDistance2
+//         ? shippingTaxInfo.shippingTax2Settings
+//         : shippingTaxInfo.shippingTaxSettings;
+    
+//     return {
+//         ...state,
+//         shipping: shippingTax,
+//         total: (state.subtotal + shippingTax),
+//     };
+// };
 
 const actionSelectProduct = (state, { product }) => {
     return {

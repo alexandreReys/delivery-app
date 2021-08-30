@@ -1,23 +1,22 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-    KeyboardAvoidingView, StyleSheet, TouchableOpacity,
-    View, Text, TextInput, ScrollView, Alert, BackHandler
+    Alert, BackHandler, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity,
+    View
 } from "react-native";
-
-import { Feather } from "@expo/vector-icons";
-
+import Loader from "../../components/Loader";
+import * as defs from "../../configs/default";
+import * as mapsService from "../../services/mapsService";
+import * as orderService from "../../services/orderService";
+import * as settingsService from "../../services/settingsService";
 import store from "../../store";
 import * as actions from "../../store/actions";
-
-import * as masks from "../../utils/masks";
 import * as utils from "../../utils";
-import * as defs from "../../configs/default";
-import * as orderService from "../../services/orderService";
-import * as mapsService from "../../services/mapsService";
-import * as settingsService from "../../services/settingsService";
-import Loader from "../../components/Loader";
+import * as masks from "../../utils/masks";
 
-const Address = ({ navigation }) => {
+
+
+
+const Address = ({ route, navigation }) => {
 
     const [loading, setLoading] = useState(false);
     const [deliveryAreaDistance, setDeliveryAreaDistance] = useState(0);
@@ -88,9 +87,11 @@ Atendemos uma área de ${deliveryAreaDistance} kms e você se encontra a ${custo
                 shippingTaxSettings: store.getState().defaultState.shippingTaxSettings,
                 deliveryAreaDistance2: store.getState().defaultState.deliveryAreaDistance2,
                 shippingTax2Settings: store.getState().defaultState.shippingTax2Settings,
+                deliveryAreaDistance3: store.getState().defaultState.deliveryAreaDistance3,
+                shippingTax3Settings: store.getState().defaultState.shippingTax3Settings,
             }
         ));
-        navigation.navigate(navigation.state.params);
+        navigation.navigate(route.params);
     };
 
     function verifyFields() {

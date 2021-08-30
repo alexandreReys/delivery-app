@@ -1,24 +1,22 @@
+import { Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-    KeyboardAvoidingView, StyleSheet,
-    View, ScrollView, Text, Linking, TouchableWithoutFeedback, TouchableOpacity,
+    KeyboardAvoidingView, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-
-import * as masks from "../../utils/masks";
-import * as utils from "../../utils";
-import * as defs from "../../configs/default";
-
 import Header from "../../components/Header";
-
+import * as defs from "../../configs/default";
 import * as orderService from "../../services/orderService";
 import store from "../../store";
+import * as utils from "../../utils";
+import * as masks from "../../utils/masks";
 
 
-const CustomerOrder = ({ navigation }) => {
 
-    const [order, setOrder] = useState(navigation.state.params.order);
+
+
+const CustomerOrder = ({ route, navigation }) => {
+
+    const [order, setOrder] = useState(route.params.order);
     const [items, setItems] = useState([]);
     const [historyItems, setHistoryItems] = useState([]);
 

@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from "../services/api";
 import store from "../store";
-import { actionSetOrder, actionSetDeliveryAddress } from "../store/actions";
+import { actionSetDeliveryAddress, actionSetOrder } from "../store/actions";
 
 export const post = async () => {
     let shoppingCart = store.getState().cartState;

@@ -25,6 +25,8 @@ const INITIAL_STATE = {
   shippingTaxSettings: 0,
   deliveryAreaDistance2: 0,
   shippingTax2Settings: 0,
+  deliveryAreaDistance3: 0,
+  shippingTax3Settings: 0,
 };
 
 export default function defaultReducer(state = INITIAL_STATE, action) {
@@ -64,6 +66,8 @@ const getSettings = (state, { settings }) => {
     shippingTaxSettings: settings.ShippingTaxSettings,
     deliveryAreaDistance2: settings.DeliveryAreaDistance2,
     shippingTax2Settings: settings.ShippingTax2Settings,
+    deliveryAreaDistance3: settings.DeliveryAreaDistance3,
+    shippingTax3Settings: settings.ShippingTax3Settings,
     efectiveShippingTax: settings.ShippingTaxSettings,
   };
 };

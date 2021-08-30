@@ -1,13 +1,13 @@
+import { getCurrentPositionAsync, requestPermissionsAsync } from "expo-location";
 import { Alert } from "react-native";
-import { requestPermissionsAsync, getCurrentPositionAsync } from "expo-location";
+import noImage from "../../assets/no-image.png";
 // import * as orderService from "../services/orderService";
 import * as mapsService from "../services/mapsService";
-
 import store from "../store";
+import * as actions from "../store/actions";
 import * as masks from "./masks";
 
-import * as actions from "../store/actions";
-import noImage from "../../assets/no-image.png";
+
 
 export const testaCPF = (pStrCPF) => {
     var Soma;
@@ -217,7 +217,7 @@ export const getShippingTax = async () => {
 
     if (!deliveryInfo.street) return settings.shippingTaxSettings;
 
-    let customerDistance = store.getState().cartState.customerDistance;
+    let customerDistance = store.getState().cartcustomerDistance;
 
     if (!customerDistance) {
         const addr = getShortAddress(deliveryInfo);
@@ -230,7 +230,19 @@ export const getShippingTax = async () => {
 
     if (!customerDistance) return settings.shippingTaxSettings;
 
-    return ( customerDistance <= settings.deliveryAreaDistance2 )
-        ? settings.shippingTax2Settings
-        : settings.shippingTaxSettings;
+    let shippingTax = settings.shippingTaxSettings;
+    
+    if (customerDistance <= settings.deliveryAreaDistance3) {
+        shippingTax = settings.shippingTax3Settings
+    } else {
+        if (customerDistance <= settings.deliveryAreaDistance2) {
+            shippingTax = settings.shippingTax2Settings
+        };
+    };
+
+    return shippingTax;
+
+    // return ( customerDistance <= settings.deliveryAreaDistance2 )
+    //     ? settings.shippingTax2Settings
+    //     : settings.shippingTaxSettings;
 };

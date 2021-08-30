@@ -1,21 +1,17 @@
-import "react-native-gesture-handler";
-
+import { Anton_400Regular, useFonts } from "@expo-google-fonts/anton";
+import { NavigationContainer } from '@react-navigation/native';
+import AppLoading from 'expo-app-loading';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-import React, { useState, useEffect, useRef } from 'react';
-
-import { Alert, StatusBar } from "react-native";
-import { AppLoading } from "expo";
-import { useFonts, Anton_400Regular } from "@expo-google-fonts/anton";
-
-import { Provider } from "react-redux";
-import store from "./src/store";
-
-import Routes from "./src/routes";
-
-import * as pushNotificationService from "./src/services/pushNotificationService";
+import React, { useEffect, useRef, useState } from 'react';
+import { StatusBar } from "react-native";
 import { AppearanceProvider } from 'react-native-appearance';
+import "react-native-gesture-handler";
+import { Provider } from "react-redux";
+import Routes from "./src/routes";
+import * as pushNotificationService from "./src/services/pushNotificationService";
+import store from "./src/store";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -30,7 +26,7 @@ export default function App() {
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
-  const [fontsLoaded] = useFonts({Anton_400Regular});
+  const [fontsLoaded] = useFonts({ Anton_400Regular });
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => {
@@ -56,10 +52,12 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <AppearanceProvider>
-        <StatusBar barStyle="light-content" backGroundColor="black" translucent={false} />
-        <Routes />
+      <NavigationContainer>
+        <AppearanceProvider>
+          <StatusBar barStyle="light-content" backGroundColor="black" translucent={false} />
+          <Routes />
         </AppearanceProvider>
+      </NavigationContainer>
     </Provider>
   );
 }
@@ -81,9 +79,9 @@ async function registerForPushNotificationsAsync() {
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
   }
-   else {
+  else {
     token = "EmulatorPushToken[0000000000000000000000]";
-   }
+  }
 
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
