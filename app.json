@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "deliveryanr",
-    "slug": "deliveryanr",
+    "name": "davillaadegaliviero",
+    "slug": "davillaadegaliviero",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "2.2.1",
+    "version": "2.3.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -22,13 +22,13 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anralexandre.deliveryanr",
-      "buildNumber": "2.2.1"
+      "bundleIdentifier": "br.com.davillaadegaliviero",
+      "buildNumber": "2.3.1"
     },
     "android": {
-      "package": "com.anralexandre.deliveryanr",
+      "package": "br.com.davillaadegaliviero",
       "permissions": [],
-      "versionCode": 24,
+      "versionCode": 25,
       "googleServicesFile": "./google-services.json",
       "useNextNotificationsApi": true
     }
